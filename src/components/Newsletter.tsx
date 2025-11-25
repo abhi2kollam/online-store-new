@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const Newsletter = () => {
     return (
-        <div className="w-full max-w-7xl mx-auto px-4 mt-16 mb-12">
+        <div className="w-full mx-auto mt-16 mb-12">
             <div className="relative w-full h-[400px] rounded-[3rem] overflow-hidden bg-[#a69d93]">
                 {/* Background Image - using a similar shopping image from Unsplash */}
                 <div className="absolute inset-0">

@@ -1,6 +1,6 @@
 import { getProducts, getCategories } from '@/services/mockData';
 import TrendingProductCard from '@/components/TrendingProductCard';
-import FeatureCards from '@/components/FeatureCards';
+import HeroSection from '@/components/HeroSection';
 import Newsletter from '@/components/Newsletter';
 import DealBanner from '@/components/DealBanner';
 import Link from 'next/link';
@@ -13,11 +13,7 @@ export default async function Home() {
 
   return (
     <div className="space-y-16 pb-12">
-      <section className="text-center py-12">
-        <h1 className="text-4xl font-bold mb-4">Welcome to OnlineStore</h1>
-        <p className="text-lg text-base-content/70">Discover the latest trends in fashion.</p>
-        <FeatureCards />
-      </section>
+      <HeroSection />
 
       <section>
         <div className="flex justify-between items-center mb-6">
