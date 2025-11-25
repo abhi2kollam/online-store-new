@@ -23,12 +23,12 @@ const TrendingProductCard = ({ product }: TrendingProductCardProps) => {
             </div>
 
             {/* Sale Badge */}
-            <div className="absolute top-4 left-4">
-                <span className="badge badge-neutral text-white px-3 py-1 font-medium">Sale</span>
+            <div className="absolute top-4 left-0">
+                <span className="badge badge-neutral text-white px-3 py-1 font-medium rounded-l-none">Sale</span>
             </div>
 
             {/* Floating Bottom Bar */}
-            <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-2xl p-4 flex justify-between items-center shadow-sm">
+            <div className="absolute bottom-4 left-4 right-4 bg-white/90  rounded-2xl p-4 flex justify-between items-center shadow-sm">
                 <div>
                     <h3 className="font-bold text-gray-900">{product.name}</h3>
                     <div className="flex items-center gap-2 mt-1">

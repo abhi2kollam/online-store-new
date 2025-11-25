@@ -195,7 +195,7 @@ export const mockCategories: MockCategory[] = [
     { id: '1', name: 'Men', count: 15, image: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
     { id: '2', name: 'Women', count: 25, image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
     { id: '3', name: 'Sports', count: 10, image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
-    { id: '4', name: 'Electronics', count: 5, image: 'https://images.unsplash.com/photo-1498049860654-af1a5c5668ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: '4', name: 'Electronics', count: 5, image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
 ];
 
 export const getCategories = async (): Promise<MockCategory[]> => {

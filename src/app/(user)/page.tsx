@@ -1,5 +1,6 @@
 import { getProducts, getCategories } from '@/services/mockData';
 import TrendingProductCard from '@/components/TrendingProductCard';
+import TrendingSection from '@/components/TrendingSection';
 import HeroSection from '@/components/HeroSection';
 import Newsletter from '@/components/Newsletter';
 import DealBanner from '@/components/DealBanner';
@@ -15,20 +16,7 @@ export default async function Home() {
     <div className="space-y-16 pb-12">
       <HeroSection />
 
-      <section>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold">Trending Now</h2>
-          <div className="flex gap-2">
-            <button className="btn btn-circle btn-sm btn-ghost">❮</button>
-            <button className="btn btn-circle btn-sm btn-ghost">❯</button>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {trendingProducts.map((product) => (
-            <TrendingProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
+      <TrendingSection title="Trending Now" products={trendingProducts} />
 
       <section>
         <h2 className="text-3xl font-bold mb-8">Shop By Categories</h2>
@@ -54,20 +42,7 @@ export default async function Home() {
 
       <DealBanner />
 
-      <section>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold">New Arrivals</h2>
-          <div className="flex gap-2">
-            <button className="btn btn-circle btn-sm btn-ghost">❮</button>
-            <button className="btn btn-circle btn-sm btn-ghost">❯</button>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {trendingProducts.map((product) => (
-            <TrendingProductCard key={`new-${product.id}`} product={product} />
-          ))}
-        </div>
-      </section>
+      <TrendingSection title="New Arrivals" products={trendingProducts} />
 
       <Newsletter />
     </div>

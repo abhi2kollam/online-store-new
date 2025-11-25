@@ -3,8 +3,8 @@ import Image from 'next/image';
 
 const DealBanner = () => {
     return (
-        <div className="w-full max-w-7xl mx-auto px-4 mt-16">
-            <div className="relative w-full h-[500px] rounded-[3rem] overflow-hidden bg-[#d9d9d9]">
+        <div className="w-full mx-auto mt-16">
+            <div className="relative w-full h-[500px] rounded-3xl overflow-hidden bg-[#d9d9d9]">
                 {/* Background Image */}
                 <div className="absolute inset-0">
                     <Image
@@ -13,7 +13,7 @@ const DealBanner = () => {
                         fill
                         className="object-cover object-top opacity-90"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#d9d9d9] via-[#d9d9d9]/80 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-r from-[#d9d9d9] via-[#d9d9d9]/80 to-transparent" />
                 </div>
 
                 <div className="relative h-full flex flex-col justify-center px-8 md:px-16 max-w-2xl">
