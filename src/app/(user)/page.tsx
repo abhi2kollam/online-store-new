@@ -1,6 +1,8 @@
 import { getProducts, getCategories } from '@/services/mockData';
 import TrendingProductCard from '@/components/TrendingProductCard';
 import FeatureCards from '@/components/FeatureCards';
+import Newsletter from '@/components/Newsletter';
+import DealBanner from '@/components/DealBanner';
 import Link from 'next/link';
 
 export default async function Home() {
@@ -53,6 +55,25 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      <DealBanner />
+
+      <section>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold">New Arrivals</h2>
+          <div className="flex gap-2">
+            <button className="btn btn-circle btn-sm btn-ghost">❮</button>
+            <button className="btn btn-circle btn-sm btn-ghost">❯</button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {trendingProducts.map((product) => (
+            <TrendingProductCard key={`new-${product.id}`} product={product} />
+          ))}
+        </div>
+      </section>
+
+      <Newsletter />
     </div>
   );
 }

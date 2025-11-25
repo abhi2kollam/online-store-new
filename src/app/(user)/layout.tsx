@@ -1,4 +1,5 @@
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { CartProvider } from '@/context/CartContext';
 
 export default function UserLayout({
@@ -13,11 +14,7 @@ export default function UserLayout({
                 <main className="flex-grow container mx-auto px-4 py-8">
                     {children}
                 </main>
-                <footer className="footer footer-center p-4 bg-base-300 text-base-content">
-                    <aside>
-                        <p>Copyright © {new Date().getFullYear()} - All right reserved by Online Store Ltd</p>
-                    </aside>
-                </footer>
+                <Footer />
             </div>
         </CartProvider>
     );
