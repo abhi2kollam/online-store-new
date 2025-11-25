@@ -1,20 +1,27 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 
 const Navbar = () => {
     const { items } = useCart();
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    const pathname = usePathname();
+
+    const isActive = (path: string) => {
+        return pathname === path ? 'text-primary font-semibold font-xl' : 'hover:text-primary font-semibold font-xl';
+    };
 
     return (
-        <div className="navbar bg-base-100 shadow-md">
+        <div className="navbar bg-base-100 shadow-md sticky top-0 z-50">
             <div className="navbar-start">
-                <Link href="/" className="btn btn-ghost text-2xl font-bold">Online Store</Link>
+                <Link href="/" className="btn btn-ghost text-2xl font-extrabold tracking-tight">Online Store</Link>
             </div>
             <div className="navbar-center hidden lg:flex">
-                <ul className="menu menu-horizontal px-1">
-                    <li><Link href="/">Home</Link></li>
+                <ul className="menu menu-horizontal px-1 gap-4 ">
+                    <li><Link href="/" className={isActive('/')}>Home</Link></li>
+                    <li><Link href="/shop" className={isActive('/shop')}>Shop</Link></li>
                 </ul>
             </div>
             <div className="navbar-end">

@@ -21,7 +21,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <div className="card-body">
                 <h2 className="card-title">
                     {product.name}
-                    <div className="badge badge-secondary">{product.category}</div>
+                    <span className="badge badge-secondary">{product.category}</span>
                 </h2>
                 <p className="line-clamp-2">{product.description}</p>
                 <div className="card-actions justify-between items-center mt-4">
