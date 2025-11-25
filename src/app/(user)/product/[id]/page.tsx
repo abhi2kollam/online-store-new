@@ -19,7 +19,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     }
 
     return (
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 mt-8">
             <div className="relative h-96 md:h-[600px] w-full">
                 <Image
                     src={product.image}
@@ -43,7 +43,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <button className="btn btn-outline btn-secondary">Add to Wishlist</button>
                 </div>
 
-                <div className="alert alert-info mt-4">
+                <div className="text-info mt-4">
                     <span>Stock: {product.stock} available</span>
                 </div>
 

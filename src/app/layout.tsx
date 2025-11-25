@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable}`}>
+    <html lang="en" data-theme="light" className={`${outfit.variable}`}>
       <body
         className="font-sans antialiased"
       >

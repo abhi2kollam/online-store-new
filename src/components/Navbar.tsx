@@ -14,7 +14,7 @@ const Navbar = () => {
     };
 
     return (
-        <div className="navbar bg-base-100 shadow-md sticky top-0 z-50">
+        <div className="navbar glass shadow-md sticky top-0 z-50">
             <div className="navbar-start">
                 <Link href="/" className="btn btn-ghost text-2xl font-extrabold tracking-tight">Online Store</Link>
             </div>
