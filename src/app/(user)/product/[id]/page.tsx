@@ -1,8 +1,9 @@
-import { getProductById } from '@/services/mockData';
-import Image from 'next/image';
+import { getProductById, getProducts } from '@/services/mockData';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import AddToCartButton from '@/components/AddToCartButton';
+import ImageGallery from '@/components/ImageGallery';
+import TrendingProductCard from '@/components/TrendingProductCard';
 
 interface ProductPageProps {
     params: Promise<{
@@ -18,16 +19,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
         notFound();
     }
 
+    // Fallback if images array is empty (shouldn't happen with updated mock data but good for safety)
+    const images = product.images && product.images.length > 0 ? product.images : [product.image];
+
     return (
         <div className="grid md:grid-cols-2 gap-8 mt-8">
-            <div className="relative h-96 md:h-[600px] w-full">
-                <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover rounded-lg shadow-lg"
-                />
-            </div>
+            <ImageGallery images={images} name={product.name} />
             <div className="space-y-6">
                 <div>
                     <h1 className="text-4xl font-bold">{product.name}</h1>
@@ -51,6 +48,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <Link href="/" className="btn btn-ghost">
                         ← Back to Products
                     </Link>
+                </div>
+            </div>
+
+            {/* Explore More Section */}
+            <div className="col-span-1 md:col-span-2 my-8">
+                <h2 className="text-3xl font-bold mb-8">Explore More</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Filter out current product and show up to 4 related products */}
+                    {(await getProducts(undefined, product.category))
+                        .filter((p) => p.id !== product.id)
+                        .slice(0, 4)
+                        .map((relatedProduct) => (
+                            <TrendingProductCard key={relatedProduct.id} product={relatedProduct} />
+                        ))}
                 </div>
             </div>
         </div>
