@@ -24,7 +24,7 @@ const TrendingProductCard = ({ product }: TrendingProductCardProps) => {
 
             {/* Sale Badge */}
             <div className="absolute top-4 left-0">
-                <span className="badge badge-neutral text-white px-3 py-1 font-medium rounded-l-none">Sale</span>
+                <span className="badge badge-accent text-white px-3 py-1 font-medium rounded-l-none">Sale</span>
             </div>
 
             {/* Floating Bottom Bar */}

@@ -2,6 +2,7 @@ import { getProducts, getCategories } from '@/services/mockData';
 import TrendingProductCard from '@/components/TrendingProductCard';
 import TrendingSection from '@/components/TrendingSection';
 import HeroSection from '@/components/HeroSection';
+import ServiceHighlights from '@/components/ServiceHighlights';
 import Newsletter from '@/components/Newsletter';
 import DealBanner from '@/components/DealBanner';
 import Link from 'next/link';
@@ -15,6 +16,7 @@ export default async function Home() {
   return (
     <div className="space-y-16 pb-12">
       <HeroSection />
+      <ServiceHighlights />
 
       <TrendingSection title="Trending Now" products={trendingProducts} />
 

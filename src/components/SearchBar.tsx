@@ -17,7 +17,7 @@ export default function SearchBar() {
         }
 
         startTransition(() => {
-            router.replace(`/?${params.toString()}`);
+            router.replace(`/shop?${params.toString()}`);
         });
     };
 

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 
-const categories = ['All', 'Men', 'Women', 'Sports'];
+const categories = ['All', 'Men', 'Women', 'Sports', 'Electronics', 'Accessories'];
 
 export default function CategoryFilter() {
     const router = useRouter();
@@ -21,7 +21,7 @@ export default function CategoryFilter() {
         }
 
         startTransition(() => {
-            router.replace(`/?${params.toString()}`);
+            router.replace(`/shop?${params.toString()}`);
         });
     };
 

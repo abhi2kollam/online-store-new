@@ -116,7 +116,7 @@ const HeroSection = () => {
                         <button
                             key={index}
                             onClick={() => goToSlide(index)}
-                            className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide === index ? 'bg-blue-500 w-6' : 'bg-white/50 hover:bg-white'
+                            className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide === index ? 'bg-accent w-6' : 'bg-white/50 hover:bg-white'
                                 }`}
                             aria-label={`Go to slide ${index + 1}`}
                         />
