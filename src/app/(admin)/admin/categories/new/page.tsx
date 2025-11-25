@@ -1,18 +1,34 @@
 'use client';
-
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function NewCategoryPage() {
     const router = useRouter();
     const [name, setName] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        alert('Category created successfully!');
-        router.push('/admin/categories');
+        setLoading(true);
+
+        const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+
+        try {
+            const { error } = await supabase
+                .from('categories')
+                .insert([{ name, slug }]);
+
+            if (error) throw error;
+
+            alert('Category created successfully!');
+            router.push('/admin/categories');
+        } catch (error) {
+            console.error('Error creating category:', error);
+            alert('Error creating category. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -34,11 +50,11 @@ export default function NewCategoryPage() {
                 </div>
 
                 <div className="flex justify-end gap-4 mt-6">
-                    <button type="button" className="btn btn-ghost" onClick={() => router.back()}>
+                    <button type="button" className="btn btn-ghost" onClick={() => router.back()} disabled={loading}>
                         Cancel
                     </button>
-                    <button type="submit" className="btn btn-primary">
-                        Create
+                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                        {loading ? 'Creating...' : 'Create'}
                     </button>
                 </div>
             </form>
