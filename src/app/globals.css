@@ -2,7 +2,7 @@
 @plugin "daisyui";
 
 @theme {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-outfit);
   --font-mono: var(--font-geist-mono);
 }
 
