@@ -3,6 +3,8 @@ import ProductCard from '@/components/ProductCard';
 import SearchBar from '@/components/SearchBar';
 import CategoryFilter from '@/components/CategoryFilter';
 
+import FeatureCards from '@/components/FeatureCards';
+
 interface HomeProps {
   searchParams: Promise<{
     q?: string;
@@ -20,7 +22,9 @@ export default async function Home({ searchParams }: HomeProps) {
         <h1 className="text-4xl font-bold mb-4">Welcome to OnlineStore</h1>
         <p className="text-lg text-base-content/70">Discover the latest trends in fashion.</p>
 
-        <div className="mt-8 flex flex-col items-center gap-4">
+        <FeatureCards />
+
+        <div className="mt-12 flex flex-col items-center gap-4">
           <SearchBar />
           <CategoryFilter />
         </div>
