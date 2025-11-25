@@ -28,7 +28,7 @@ export default function NewCategoryPage() {
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="input input-bordered"
+                        className="input input-bordered w-full"
                         required
                     />
                 </div>
@@ -38,7 +38,7 @@ export default function NewCategoryPage() {
                         Cancel
                     </button>
                     <button type="submit" className="btn btn-primary">
-                        Create Category
+                        Create
                     </button>
                 </div>
             </form>

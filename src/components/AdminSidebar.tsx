@@ -1,6 +1,19 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function AdminSidebar() {
+    const pathname = usePathname();
+
+    const links = [
+        { href: '/admin', label: 'Dashboard' },
+        { href: '/admin/categories', label: 'Categories' },
+        { href: '/admin/products', label: 'Products' },
+        { href: '/admin/orders', label: 'Orders' },
+        { href: '/admin/users', label: 'Users' },
+    ];
+
     return (
         <div className="drawer-side z-20">
             <label htmlFor="admin-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
@@ -8,11 +21,16 @@ export default function AdminSidebar() {
                 <li className="mb-4">
                     <Link href="/admin" className="text-xl font-bold">Admin Panel</Link>
                 </li>
-                <li><Link href="/admin">Dashboard</Link></li>
-                <li><Link href="/admin/products">Products</Link></li>
-                <li><Link href="/admin/categories">Categories</Link></li>
-                <li><Link href="/admin/orders">Orders</Link></li>
-                <li><Link href="/admin/users">Users</Link></li>
+                {links.map((link) => (
+                    <li key={link.href}>
+                        <Link
+                            href={link.href}
+                            className={pathname === link.href ? 'menu-active' : ''}
+                        >
+                            {link.label}
+                        </Link>
+                    </li>
+                ))}
                 <div className="divider"></div>
                 <li><Link href="/">Back to Store</Link></li>
             </ul>

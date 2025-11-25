@@ -11,13 +11,15 @@ interface ProductFormProps {
 
 export default function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     const router = useRouter();
+    const [newImageUrl, setNewImageUrl] = useState('');
     const [formData, setFormData] = useState<Partial<Product>>(
         initialData || {
             name: '',
             price: 0,
             category: '',
             description: '',
-            image: 'https://placehold.co/400x600',
+            image: '',
+            images: [],
             stock: 0,
         }
     );
@@ -27,6 +29,23 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
         setFormData((prev) => ({
             ...prev,
             [name]: name === 'price' || name === 'stock' ? parseFloat(value) : value,
+        }));
+    };
+
+    const handleAddImage = () => {
+        if (newImageUrl && !formData.images?.includes(newImageUrl)) {
+            setFormData((prev) => ({
+                ...prev,
+                images: [...(prev.images || []), newImageUrl],
+            }));
+            setNewImageUrl('');
+        }
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setFormData((prev) => ({
+            ...prev,
+            images: prev.images?.filter((_, i) => i !== index) || [],
         }));
     };
 
@@ -49,7 +68,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="input input-bordered"
+                    className="input input-bordered w-full"
                     required
                 />
             </div>
@@ -64,7 +83,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                         name="price"
                         value={formData.price}
                         onChange={handleChange}
-                        className="input input-bordered"
+                        className="input input-bordered w-full"
                         step="0.01"
                         required
                     />
@@ -78,7 +97,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                         name="stock"
                         value={formData.stock}
                         onChange={handleChange}
-                        className="input input-bordered"
+                        className="input input-bordered w-full"
                         required
                     />
                 </div>
@@ -92,28 +111,76 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="select select-bordered"
+                    className="select select-bordered w-full"
                     required
                 >
                     <option value="" disabled>Select Category</option>
                     <option value="Men">Men</option>
                     <option value="Women">Women</option>
                     <option value="Sports">Sports</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Electronics">Electronics</option>
                 </select>
             </div>
 
             <div className="form-control">
                 <label className="label">
-                    <span className="label-text">Image URL</span>
+                    <span className="label-text">Main Image URL</span>
                 </label>
-                <input
-                    type="url"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
-                    className="input input-bordered"
-                    required
-                />
+                <div className="flex gap-4 items-start">
+                    <input
+                        type="url"
+                        name="image"
+                        value={formData.image}
+                        onChange={handleChange}
+                        className="input input-bordered w-full"
+                        placeholder="Enter main image URL"
+                        required
+                    />
+                    {formData.image && (
+                        <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-base-300">
+                            <img src={formData.image} alt="Main" className="w-full h-full object-cover" />
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="form-control">
+                <label className="label">
+                    <span className="label-text">Additional Images</span>
+                </label>
+
+                {/* Image List */}
+                {formData.images && formData.images.length > 0 && (
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                        {formData.images.map((img, index) => (
+                            <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-base-300">
+                                <img src={img} alt={`Additional ${index + 1}`} className="w-full h-full object-cover" />
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="absolute top-1 right-1 btn btn-circle btn-xs btn-error opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Add New Image */}
+                <div className="flex gap-2">
+                    <input
+                        type="url"
+                        placeholder="Enter additional image URL"
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        className="input input-bordered w-full"
+                    />
+                    <button type="button" onClick={handleAddImage} className="btn btn-secondary">
+                        Add
+                    </button>
+                </div>
             </div>
 
             <div className="form-control">
@@ -124,7 +191,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    className="textarea textarea-bordered h-24"
+                    className="textarea textarea-bordered h-24 w-full"
                     required
                 ></textarea>
             </div>

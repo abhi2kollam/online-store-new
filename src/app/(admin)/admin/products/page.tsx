@@ -47,7 +47,7 @@ export default async function AdminProductsPage() {
                                 <td>{product.category}</td>
                                 <td>${product.price.toFixed(2)}</td>
                                 <td>{product.stock}</td>
-                                <td className="flex gap-2">
+                                <td>
                                     <Link href={`/admin/products/${product.id}`} className="btn btn-sm btn-ghost">
                                         Edit
                                     </Link>
