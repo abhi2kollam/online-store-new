@@ -12,6 +12,7 @@ export default function AdminSidebar() {
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/admin/categories', label: 'Categories', icon: Layers },
         { href: '/admin/products', label: 'Products', icon: Package },
+        { href: '/admin/attributes', label: 'Attributes', icon: Layers },
         { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
         { href: '/admin/users', label: 'Users', icon: Users },
     ];

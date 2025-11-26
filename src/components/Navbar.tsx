@@ -51,7 +51,7 @@ const Navbar = () => {
                 </ul>
             </div>
             <div className="navbar-end">
-                <ul className="menu menu-horizontal align-center px-1 gap-2">
+                <ul className="menu menu-horizontal items-center px-1 gap-2">
                     <li>
                         <Link href="/cart" className="btn btn-ghost btn-circle">
                             <div className="indicator">
