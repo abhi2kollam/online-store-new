@@ -10,11 +10,34 @@ interface ProductFormProps {
     isEdit?: boolean;
 }
 
+interface Attribute {
+    id: number;
+    name: string;
+    type: string;
+}
+
+interface Variant {
+    id?: number;
+    sku: string;
+    price: number;
+    stock: number;
+    attributes: Record<string, string>; // { "Color": "Red", "Size": "XL" }
+}
+
 export default function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     const router = useRouter();
     const [newImageUrl, setNewImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+    const [attributes, setAttributes] = useState<Attribute[]>([]);
+
+    // Product Type State
+    const [productType, setProductType] = useState<'simple' | 'variant'>('simple');
+
+    // Variant State
+    const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]); // ["Color", "Size"]
+    const [variants, setVariants] = useState<Variant[]>([]);
+
     const [formData, setFormData] = useState<Partial<Product>>(
         initialData || {
             name: '',
@@ -28,11 +51,14 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
     );
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            const { data } = await supabase.from('categories').select('id, name');
-            if (data) setCategories(data);
+        const fetchData = async () => {
+            const { data: catData } = await supabase.from('categories').select('id, name');
+            if (catData) setCategories(catData);
+
+            const { data: attrData } = await supabase.from('attributes').select('*');
+            if (attrData) setAttributes(attrData);
         };
-        fetchCategories();
+        fetchData();
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -44,9 +70,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, isMain: boolean = false) => {
-        if (!e.target.files || e.target.files.length === 0) {
-            return;
-        }
+        if (!e.target.files || e.target.files.length === 0) return;
 
         setUploading(true);
         const file = e.target.files[0];
@@ -59,9 +83,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 .from('products')
                 .upload(filePath, file);
 
-            if (uploadError) {
-                throw uploadError;
-            }
+            if (uploadError) throw uploadError;
 
             const { data } = supabase.storage.from('products').getPublicUrl(filePath);
             const publicUrl = data.publicUrl;
@@ -96,6 +118,48 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
         }));
     };
 
+    // Variant Logic
+    const handleAttributeSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const attrName = e.target.value;
+        if (attrName && !selectedAttributes.includes(attrName)) {
+            setSelectedAttributes([...selectedAttributes, attrName]);
+        }
+    };
+
+    const handleRemoveAttribute = (attrName: string) => {
+        setSelectedAttributes(selectedAttributes.filter(a => a !== attrName));
+        // Also clear variants as they might depend on this attribute
+        setVariants([]);
+    };
+
+    const addVariant = () => {
+        const newVariant: Variant = {
+            sku: '',
+            price: formData.price || 0,
+            stock: 0,
+            attributes: selectedAttributes.reduce((acc, attr) => ({ ...acc, [attr]: '' }), {})
+        };
+        setVariants([...variants, newVariant]);
+    };
+
+    const updateVariant = (index: number, field: keyof Variant | string, value: any) => {
+        const updatedVariants = [...variants];
+        if (field === 'sku' || field === 'price' || field === 'stock') {
+            updatedVariants[index] = { ...updatedVariants[index], [field]: value };
+        } else {
+            // It's an attribute
+            updatedVariants[index].attributes = {
+                ...updatedVariants[index].attributes,
+                [field]: value
+            };
+        }
+        setVariants(updatedVariants);
+    };
+
+    const removeVariant = (index: number) => {
+        setVariants(variants.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setUploading(true);
@@ -112,6 +176,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 category_id: 1, // Default fallback
                 image_url: formData.image,
                 images: formData.images,
+                product_type: productType,
             };
 
             const selectedCategory = categories.find(c => c.name === formData.category);
@@ -119,190 +184,210 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 productData.category_id = selectedCategory.id;
             }
 
-            const { error } = await supabase
+            // Insert Product
+            const { data: newProduct, error } = await supabase
                 .from('products')
-                .insert([productData]);
+                .insert([productData])
+                .select()
+                .single();
 
             if (error) throw error;
 
+            // Insert Variants
+            if (productType === 'variant' && variants.length > 0) {
+                for (const variant of variants) {
+                    const { data: variantData, error: variantError } = await supabase
+                        .from('product_variants')
+                        .insert({
+                            product_id: newProduct.id,
+                            sku: variant.sku,
+                            price: variant.price,
+                            stock: variant.stock
+                        })
+                        .select()
+                        .single();
+
+                    if (variantError) throw variantError;
+
+                    // Insert Variant Attributes
+                    for (const [attrName, attrValue] of Object.entries(variant.attributes)) {
+                        const attribute = attributes.find(a => a.name === attrName);
+                        if (attribute) {
+                            await supabase.from('product_variant_attributes').insert({
+                                variant_id: variantData.id,
+                                attribute_id: attribute.id,
+                                value: attrValue
+                            });
+                        }
+                    }
+                }
+            }
+
             alert(`Product ${isEdit ? 'updated' : 'created'} successfully!`);
             router.push('/admin/products');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving product:', error);
-            alert('Error saving product. Please try again.');
+            alert(`Error saving product: ${error.message}`);
         } finally {
             setUploading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl bg-base-100 p-6 rounded-lg shadow">
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text">Product Name</span>
-                </label>
-                <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="input input-bordered w-full"
-                    required
-                />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl bg-base-100 p-6 rounded-lg shadow">
+            {/* Basic Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Price</span>
-                    </label>
-                    <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleChange}
-                        className="input input-bordered w-full"
-                        step="0.01"
-                        required
-                    />
+                    <label className="label"><span className="label-text">Product Name</span></label>
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="input input-bordered w-full" required />
                 </div>
                 <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Stock</span>
-                    </label>
-                    <input
-                        type="number"
-                        name="stock"
-                        value={formData.stock}
-                        onChange={handleChange}
-                        className="input input-bordered w-full"
-                        required
-                    />
+                    <label className="label"><span className="label-text">Category</span></label>
+                    <select name="category" value={formData.category} onChange={handleChange} className="select select-bordered w-full" required>
+                        <option value="" disabled>Select Category</option>
+                        {categories.map((cat) => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
+                    </select>
                 </div>
             </div>
 
             <div className="form-control">
-                <label className="label">
-                    <span className="label-text">Category</span>
-                </label>
+                <label className="label"><span className="label-text">Product Type</span></label>
                 <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="select select-bordered w-full"
-                    required
+                    value={productType}
+                    onChange={(e) => setProductType(e.target.value as 'simple' | 'variant')}
+                    className="select select-bordered w-full md:w-1/2"
                 >
-                    <option value="" disabled>Select Category</option>
-                    {categories.map((cat) => (
-                        <option key={cat.id} value={cat.name}>
-                            {cat.name}
-                        </option>
-                    ))}
+                    <option value="simple">Simple Product</option>
+                    <option value="variant">Variable Product</option>
                 </select>
             </div>
 
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text">Main Image</span>
-                </label>
-                <div className="flex flex-col gap-4">
-                    <div className="flex gap-4 items-center">
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload(e, true)}
-                            className="file-input file-input-bordered w-full max-w-xs"
-                            disabled={uploading}
-                        />
-                        <span className="text-sm">OR</span>
-                        <input
-                            type="url"
-                            name="image"
-                            value={formData.image}
-                            onChange={handleChange}
-                            className="input input-bordered w-full"
-                            placeholder="Enter image URL"
-                        />
+            {/* Simple Product Fields */}
+            {productType === 'simple' && (
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="form-control">
+                        <label className="label"><span className="label-text">Price</span></label>
+                        <input type="number" name="price" value={formData.price} onChange={handleChange} className="input input-bordered w-full" step="0.01" required />
+                    </div>
+                    <div className="form-control">
+                        <label className="label"><span className="label-text">Stock</span></label>
+                        <input type="number" name="stock" value={formData.stock} onChange={handleChange} className="input input-bordered w-full" required />
+                    </div>
+                </div>
+            )}
+
+            {/* Variant Product Fields */}
+            {productType === 'variant' && (
+                <div className="border p-4 rounded-lg bg-base-200 space-y-4">
+                    <h3 className="font-bold text-lg">Variants</h3>
+
+                    {/* Attribute Selector */}
+                    <div className="flex gap-2 items-end">
+                        <div className="form-control w-full max-w-xs">
+                            <label className="label"><span className="label-text">Add Attribute</span></label>
+                            <select className="select select-bordered" onChange={handleAttributeSelect} value="">
+                                <option value="" disabled>Select Attribute</option>
+                                {attributes.filter(a => !selectedAttributes.includes(a.name)).map(a => (
+                                    <option key={a.id} value={a.name}>{a.name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
-                    {formData.image && (
-                        <div className="relative w-40 h-40 shrink-0 rounded-lg overflow-hidden border border-base-300">
-                            <img src={formData.image} alt="Main" className="w-full h-full object-cover" />
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="form-control">
-                <label className="label">
-                    <span className="label-text">Additional Images</span>
-                </label>
-
-                {/* Image List */}
-                {formData.images && formData.images.length > 0 && (
-                    <div className="grid grid-cols-3 gap-4 mb-4">
-                        {formData.images.map((img, index) => (
-                            <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-base-300">
-                                <img src={img} alt={`Additional ${index + 1}`} className="w-full h-full object-cover" />
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveImage(index)}
-                                    className="absolute top-1 right-1 btn btn-circle btn-xs btn-error opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    ✕
-                                </button>
+                    {/* Selected Attributes */}
+                    <div className="flex flex-wrap gap-2">
+                        {selectedAttributes.map(attr => (
+                            <div key={attr} className="badge badge-primary gap-2 p-3">
+                                {attr}
+                                <button type="button" onClick={() => handleRemoveAttribute(attr)} className="btn btn-xs btn-circle btn-ghost">✕</button>
                             </div>
                         ))}
                     </div>
-                )}
 
-                {/* Add New Image */}
-                <div className="flex flex-col gap-2">
-                    <div className="flex gap-4 items-center">
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileUpload(e, false)}
-                            className="file-input file-input-bordered w-full max-w-xs"
-                            disabled={uploading}
-                        />
-                        <span className="text-sm">OR</span>
-                        <div className="flex gap-2 w-full">
-                            <input
-                                type="url"
-                                placeholder="Enter additional image URL"
-                                value={newImageUrl}
-                                onChange={(e) => setNewImageUrl(e.target.value)}
-                                className="input input-bordered w-full"
-                            />
-                            <button type="button" onClick={handleAddImage} className="btn btn-secondary">
-                                Add
-                            </button>
+                    <div className="divider"></div>
+
+                    {/* Variant List */}
+                    {selectedAttributes.length > 0 && (
+                        <div className="space-y-4">
+                            <button type="button" onClick={addVariant} className="btn btn-secondary btn-sm">+ Add Variant</button>
+
+                            {variants.map((variant, index) => (
+                                <div key={index} className="card bg-base-100 shadow-sm p-4 border">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+                                        {selectedAttributes.map(attr => (
+                                            <div key={attr} className="form-control">
+                                                <label className="label text-xs">{attr}</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder={attr}
+                                                    className="input input-bordered input-sm"
+                                                    value={variant.attributes[attr] || ''}
+                                                    onChange={(e) => updateVariant(index, attr, e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="form-control">
+                                            <label className="label text-xs">SKU</label>
+                                            <input
+                                                type="text"
+                                                className="input input-bordered input-sm"
+                                                value={variant.sku}
+                                                onChange={(e) => updateVariant(index, 'sku', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="form-control">
+                                            <label className="label text-xs">Price</label>
+                                            <input
+                                                type="number"
+                                                className="input input-bordered input-sm"
+                                                value={variant.price}
+                                                onChange={(e) => updateVariant(index, 'price', parseFloat(e.target.value))}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-control">
+                                            <label className="label text-xs">Stock</label>
+                                            <input
+                                                type="number"
+                                                className="input input-bordered input-sm"
+                                                value={variant.stock}
+                                                onChange={(e) => updateVariant(index, 'stock', parseInt(e.target.value))}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end mt-2">
+                                        <button type="button" onClick={() => removeVariant(index)} className="btn btn-xs btn-error btn-outline">Remove</button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </div>
+                    )}
                 </div>
+            )}
+
+            {/* Images & Description (Common) */}
+            <div className="form-control">
+                <label className="label"><span className="label-text">Main Image</span></label>
+                <div className="flex gap-4 items-center">
+                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, true)} className="file-input file-input-bordered w-full max-w-xs" disabled={uploading} />
+                    <span className="text-sm">OR</span>
+                    <input type="url" name="image" value={formData.image} onChange={handleChange} className="input input-bordered w-full" placeholder="Enter image URL" />
+                </div>
+                {formData.image && <img src={formData.image} alt="Main" className="mt-2 w-32 h-32 object-cover rounded" />}
             </div>
 
             <div className="form-control">
-                <label className="label">
-                    <span className="label-text">Description</span>
-                </label>
-                <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    className="textarea textarea-bordered h-24 w-full"
-                    required
-                ></textarea>
+                <label className="label"><span className="label-text">Description</span></label>
+                <textarea name="description" value={formData.description} onChange={handleChange} className="textarea textarea-bordered h-24" required></textarea>
             </div>
 
-            <div className="flex justify-end gap-4 mt-6">
-                <button type="button" className="btn btn-ghost" onClick={() => router.back()} disabled={uploading}>
-                    Cancel
-                </button>
-                <button type="submit" className="btn btn-primary" disabled={uploading}>
-                    {uploading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}
-                </button>
+            <div className="flex justify-end gap-4">
+                <button type="button" className="btn btn-ghost" onClick={() => router.back()} disabled={uploading}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={uploading}>{uploading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}</button>
             </div>
         </form>
     );

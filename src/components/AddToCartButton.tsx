@@ -3,13 +3,20 @@
 import { useCart } from '@/context/CartContext';
 import { Product } from '@/services/mockData';
 
-export default function AddToCartButton({ product }: { product: Product }) {
-    const { addToCart } = useCart();
+interface AddToCartButtonProps {
+    product: Product;
+    variantId?: number;
+    disabled?: boolean;
+}
+
+export default function AddToCartButton({ product, variantId, disabled }: AddToCartButtonProps) {
+    const { addToCart, loading } = useCart();
 
     return (
         <button
-            className="btn btn-primary flex-1"
-            onClick={() => addToCart(product)}
+            className="btn btn-primary"
+            onClick={() => addToCart(product, variantId)}
+            disabled={loading || disabled}
         >
             Add to Cart
         </button>

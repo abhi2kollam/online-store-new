@@ -181,9 +181,16 @@ export default function ProfilePage() {
                     </p>
                 </div>
                 {user ? (
-                    <button onClick={handleLogout} className="btn btn-outline btn-error">
-                        Logout
-                    </button>
+                    <div className="flex gap-2">
+                        {profile?.role === 'admin' && (
+                            <button onClick={() => router.push('/admin')} className="btn btn-primary">
+                                Admin Dashboard
+                            </button>
+                        )}
+                        <button onClick={handleLogout} className="btn btn-outline btn-error">
+                            Logout
+                        </button>
+                    </div>
                 ) : (
                     <button onClick={() => router.push('/login')} className="btn btn-primary">
                         Login
