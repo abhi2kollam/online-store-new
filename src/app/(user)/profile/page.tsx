@@ -15,7 +15,6 @@ export default function ProfilePage() {
     const [formData, setFormData] = useState({
         full_name: '',
         phone: '',
-        address: '',
     });
     const router = useRouter();
 
@@ -27,6 +26,7 @@ export default function ProfilePage() {
         state: '',
         postal_code: '',
         country: '',
+        is_default: false,
     });
 
     useEffect(() => {
@@ -46,7 +46,6 @@ export default function ProfilePage() {
                     setFormData({
                         full_name: profileData.full_name || '',
                         phone: profileData.phone || '',
-                        address: profileData.address || '',
                     });
                 }
 
@@ -82,7 +81,6 @@ export default function ProfilePage() {
                 .update({
                     full_name: formData.full_name,
                     phone: formData.phone,
-                    address: formData.address,
                 })
                 .eq('id', user.id);
 
@@ -101,6 +99,14 @@ export default function ProfilePage() {
         if (!user) return;
 
         try {
+            // If setting as default, unset other defaults first
+            if (newAddress.is_default) {
+                await supabase
+                    .from('addresses')
+                    .update({ is_default: false })
+                    .eq('user_id', user.id);
+            }
+
             const { data, error } = await supabase
                 .from('addresses')
                 .insert({
@@ -112,7 +118,16 @@ export default function ProfilePage() {
 
             if (error) throw error;
 
-            setAddresses([data, ...addresses]);
+            // If we just added a default address, we need to refresh the list to show others as non-default
+            // or we can just manually update the local state
+            let updatedAddresses = [data, ...addresses];
+            if (newAddress.is_default) {
+                updatedAddresses = updatedAddresses.map(addr =>
+                    addr.id === data.id ? addr : { ...addr, is_default: false }
+                );
+            }
+
+            setAddresses(updatedAddresses);
             setShowAddressForm(false);
             setNewAddress({
                 address_line1: '',
@@ -120,6 +135,7 @@ export default function ProfilePage() {
                 state: '',
                 postal_code: '',
                 country: '',
+                is_default: false,
             });
             alert('Address added successfully!');
         } catch (error) {
@@ -204,17 +220,6 @@ export default function ProfilePage() {
                                 />
                             </div>
                         </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Address</span>
-                            </label>
-                            <textarea
-                                value={formData.address}
-                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                className="textarea textarea-bordered h-24"
-                                placeholder="123 Main St, City, Country"
-                            ></textarea>
-                        </div>
                         <div className="flex justify-end">
                             <button type="submit" className="btn btn-primary" disabled={updating}>
                                 {updating ? 'Saving...' : 'Save Changes'}
@@ -241,62 +246,83 @@ export default function ProfilePage() {
                 </div>
 
                 {showAddressForm && (
-                    <form onSubmit={handleAddAddress} className="mb-8 p-4 bg-base-200 rounded-lg space-y-4">
+                    <form onSubmit={handleAddAddress} className="mb-8 p-6 bg-base-200 rounded-lg space-y-4">
                         <div className="form-control">
-                            <label className="label">Address Line 1</label>
+                            <label className="label">
+                                <span className="label-text">Address Line 1</span>
+                            </label>
                             <input
                                 type="text"
-                                className="input input-bordered"
+                                className="input input-bordered w-full"
                                 required
                                 value={newAddress.address_line1}
                                 onChange={e => setNewAddress({ ...newAddress, address_line1: e.target.value })}
                             />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="form-control">
-                                <label className="label">City</label>
+                                <label className="label">
+                                    <span className="label-text">City</span>
+                                </label>
                                 <input
                                     type="text"
-                                    className="input input-bordered"
+                                    className="input input-bordered w-full"
                                     required
                                     value={newAddress.city}
                                     onChange={e => setNewAddress({ ...newAddress, city: e.target.value })}
                                 />
                             </div>
                             <div className="form-control">
-                                <label className="label">State</label>
+                                <label className="label">
+                                    <span className="label-text">State</span>
+                                </label>
                                 <input
                                     type="text"
-                                    className="input input-bordered"
+                                    className="input input-bordered w-full"
                                     required
                                     value={newAddress.state}
                                     onChange={e => setNewAddress({ ...newAddress, state: e.target.value })}
                                 />
                             </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
                             <div className="form-control">
-                                <label className="label">Postal Code</label>
+                                <label className="label">
+                                    <span className="label-text">Postal Code</span>
+                                </label>
                                 <input
                                     type="text"
-                                    className="input input-bordered"
+                                    className="input input-bordered w-full"
                                     required
                                     value={newAddress.postal_code}
                                     onChange={e => setNewAddress({ ...newAddress, postal_code: e.target.value })}
                                 />
                             </div>
                             <div className="form-control">
-                                <label className="label">Country</label>
+                                <label className="label">
+                                    <span className="label-text">Country</span>
+                                </label>
                                 <input
                                     type="text"
-                                    className="input input-bordered"
+                                    className="input input-bordered w-full"
                                     required
                                     value={newAddress.country}
                                     onChange={e => setNewAddress({ ...newAddress, country: e.target.value })}
                                 />
                             </div>
                         </div>
-                        <button type="submit" className="btn btn-success btn-block">Save Address</button>
+                        <div className="form-control">
+                            <label className="label cursor-pointer justify-start gap-4">
+                                <input
+                                    type="checkbox"
+                                    className="checkbox"
+                                    checked={newAddress.is_default}
+                                    onChange={e => setNewAddress({ ...newAddress, is_default: e.target.checked })}
+                                />
+                                <span className="label-text">Set as default address</span>
+                            </label>
+                        </div>
+                        <div className="flex justify-end">
+                            <button type="submit" className="btn btn-success">Save Address</button>
+                        </div>
                     </form>
                 )}
 
@@ -304,7 +330,10 @@ export default function ProfilePage() {
                     {addresses.map((addr) => (
                         <div key={addr.id} className="card bg-base-200">
                             <div className="card-body p-4">
-                                <p className="font-bold">{addr.address_line1}</p>
+                                <div className="flex justify-between items-start">
+                                    <p className="font-bold">{addr.address_line1}</p>
+                                    {addr.is_default && <span className="badge badge-primary badge-sm">Default</span>}
+                                </div>
                                 <p className="text-sm">{addr.city}, {addr.state} {addr.postal_code}</p>
                                 <p className="text-sm">{addr.country}</p>
                                 <div className="card-actions justify-end mt-2">
