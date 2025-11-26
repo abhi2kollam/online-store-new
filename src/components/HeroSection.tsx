@@ -58,7 +58,7 @@ const HeroSection = () => {
     }, []);
 
     return (
-        <div className="w-full mx-auto mt-8">
+        <div className="w-full mx-auto">
             <div className="relative w-full h-[600px] rounded-3xl overflow-hidden bg-[#8c8c8c] group">
                 {/* Background Image */}
                 <div className="absolute inset-0 transition-opacity duration-700 ease-in-out">

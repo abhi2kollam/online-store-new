@@ -15,7 +15,7 @@ export default async function ShopPage({ searchParams }: ShopProps) {
     const products = await getProducts(q, category);
 
     return (
-        <div className="space-y-8 py-4">
+        <div className="space-y-8">
             <section className="text-center">
 
                 <div className="mt-8 flex flex-col items-center gap-4">

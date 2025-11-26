@@ -11,6 +11,7 @@ interface AuthFormProps {
 export default function AuthForm({ type }: AuthFormProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [fullName, setFullName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -25,6 +26,11 @@ export default function AuthForm({ type }: AuthFormProps) {
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                        },
+                    },
                 });
                 if (error) throw error;
                 alert('Signup successful! Please check your email for verification.');
@@ -53,6 +59,22 @@ export default function AuthForm({ type }: AuthFormProps) {
                 {error && (
                     <div className="alert alert-error text-sm mb-4">
                         <span>{error}</span>
+                    </div>
+                )}
+
+                {type === 'signup' && (
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">Full Name</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="John Doe"
+                            className="input input-bordered"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            required
+                        />
                     </div>
                 )}
 

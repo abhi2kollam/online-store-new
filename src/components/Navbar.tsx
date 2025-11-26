@@ -1,13 +1,39 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { createClient } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
+import { User as UserIcon, LogOut, UserCircle } from 'lucide-react';
 
 const Navbar = () => {
     const { items } = useCart();
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const pathname = usePathname();
+    const router = useRouter();
+    const [user, setUser] = useState<User | null>(null);
+    const supabase = createClient();
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        getUser();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+    };
 
     const isActive = (path: string) => {
         return pathname === path ? 'text-accent font-semibold text-xl' : 'hover:text-accent font-semibold text-xl';
@@ -25,7 +51,7 @@ const Navbar = () => {
                 </ul>
             </div>
             <div className="navbar-end">
-                <ul className="menu menu-horizontal px-1">
+                <ul className="menu menu-horizontal align-center px-1 gap-2">
                     <li>
                         <Link href="/cart" className="btn btn-ghost btn-circle">
                             <div className="indicator">
@@ -36,7 +62,35 @@ const Navbar = () => {
                             </div>
                         </Link>
                     </li>
-                    <li><Link href="/login">Login</Link></li>
+                    {user ? (
+                        <div className="dropdown dropdown-end">
+                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
+                                <div className="bg-neutral-500 text-neutral-content rounded-full w-10 flex items-center justify-center">
+                                    <UserIcon className="w-6 h-6" />
+                                </div>
+                            </div>
+                            <ul tabIndex={0} className="mt-3 z-1 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+                                <li>
+                                    <Link href="/profile" className="justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <UserCircle className="w-4 h-4" />
+                                            Profile
+                                        </div>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <button onClick={handleLogout} className="text-error">
+                                        <div className="flex items-center gap-2">
+                                            <LogOut className="w-4 h-4" />
+                                            Logout
+                                        </div>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    ) : (
+                        <li><Link href="/login" className="btn btn-primary btn-sm">Login</Link></li>
+                    )}
                 </ul>
             </div>
         </div>

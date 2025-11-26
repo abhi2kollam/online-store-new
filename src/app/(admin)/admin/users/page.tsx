@@ -1,7 +1,19 @@
-import { getUsers } from '@/services/mockData';
+import { createClient } from '@/utils/supabase/server';
+import UserRow from '@/components/UserRow';
+
+export const revalidate = 0;
 
 export default async function AdminUsersPage() {
-    const users = await getUsers();
+    const supabase = await createClient();
+    const { data: users, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching users:', error);
+        return <div>Error loading users</div>;
+    }
 
     return (
         <div className="space-y-6">
@@ -12,38 +24,21 @@ export default async function AdminUsersPage() {
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Email</th>
                             <th>Role</th>
                             <th>Status</th>
+                            <th>Joined</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
-                            <tr key={user.id}>
-                                <td>
-                                    <div className="font-bold">{user.name}</div>
-                                </td>
-                                <td>{user.email}</td>
-                                <td>
-                                    <div className={`badge ${user.role === 'Admin' ? 'badge-primary' : 'badge-ghost'}`}>
-                                        {user.role}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className={`badge ${user.status === 'Active' ? 'badge-success' : 'badge-error'}`}>
-                                        {user.status}
-                                    </div>
-                                </td>
-                                <td>
-                                    {user.status === 'Active' ? (
-                                        <button className="btn btn-xs btn-error btn-outline">Deactivate</button>
-                                    ) : (
-                                        <button className="btn btn-xs btn-success btn-outline">Activate</button>
-                                    )}
-                                </td>
-                            </tr>
+                        {users?.map((user: any) => (
+                            <UserRow key={user.id} user={user} />
                         ))}
+                        {users?.length === 0 && (
+                            <tr>
+                                <td colSpan={5} className="text-center py-4">No users found</td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>

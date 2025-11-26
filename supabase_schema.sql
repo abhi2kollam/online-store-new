@@ -63,3 +63,86 @@ create policy "Authenticated users can delete products."
 -- Policy for 'products' bucket:
 -- Give public read access to everyone.
 -- Give insert/update/delete access to authenticated users.
+-- Create Profiles Table
+create table public.profiles (
+  id uuid references auth.users on delete cascade not null primary key,
+  full_name text,
+  phone text,
+  address text,
+  role text default 'customer' check (role in ('customer', 'admin')),
+  status text default 'active' check (status in ('active', 'inactive')),
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS on Profiles
+alter table public.profiles enable row level security;
+
+create policy "Public profiles are viewable by everyone."
+  on public.profiles for select
+  using ( true );
+
+create policy "Users can insert their own profile."
+  on public.profiles for insert
+  with check ( auth.uid() = id );
+
+create policy "Users can update own profile."
+  on public.profiles for update
+  using ( auth.uid() = id );
+
+create policy "Admins can update any profile."
+  on public.profiles for update
+  using (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role = 'admin'
+    )
+  );
+
+-- Trigger to create profile on signup
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, full_name, role, status)
+  values (new.id, new.raw_user_meta_data->>'full_name', 'customer', 'active');
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- Create Addresses Table
+create table public.addresses (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  full_name text,
+  address_line1 text not null,
+  address_line2 text,
+  city text not null,
+  state text not null,
+  postal_code text not null,
+  country text not null,
+  is_default boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS on Addresses
+alter table public.addresses enable row level security;
+
+create policy "Users can view their own addresses."
+  on public.addresses for select
+  using ( auth.uid() = user_id );
+
+create policy "Users can insert their own addresses."
+  on public.addresses for insert
+  with check ( auth.uid() = user_id );
+
+create policy "Users can update their own addresses."
+  on public.addresses for update
+  using ( auth.uid() = user_id );
+
+create policy "Users can delete their own addresses."
+  on public.addresses for delete
+  using ( auth.uid() = user_id );
