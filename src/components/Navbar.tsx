@@ -42,7 +42,7 @@ const Navbar = () => {
     return (
         <div className="navbar glass shadow-md sticky top-0 z-50">
             <div className="navbar-start">
-                <Link href="/" className="btn btn-ghost text-2xl font-extrabold tracking-tight">Online Store</Link>
+                <Link href="/" className="btn btn-ghost text-accent text-2xl font-extrabold tracking-tight">Online Store</Link>
             </div>
             <div className="navbar-center hidden lg:flex">
                 <ul className="menu menu-horizontal px-1 gap-4 ">
