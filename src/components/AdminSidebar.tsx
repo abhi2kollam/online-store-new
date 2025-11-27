@@ -27,7 +27,6 @@ export default function AdminSidebar() {
         },
         { href: '/admin/categories', label: 'Categories', icon: Layers },
         { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
-        { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
         { href: '/admin/users', label: 'Users', icon: Users },
         {
             label: 'Media',

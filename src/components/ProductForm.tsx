@@ -24,6 +24,8 @@ interface Variant {
     price: number;
     stock: number;
     attributes: Record<string, string>; // { "Color": "Red", "Size": "XL" }
+    image?: string;
+    images?: string[];
 }
 
 export default function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
@@ -123,20 +125,36 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
 
     // Media Picker Logic
     const [showMediaModal, setShowMediaModal] = useState(false);
-    const [mediaPickerTarget, setMediaPickerTarget] = useState<'main' | 'gallery'>('main');
+    const [mediaPickerTarget, setMediaPickerTarget] = useState<{ type: 'main' | 'gallery' | 'variant_main' | 'variant_gallery', variantIndex?: number }>({ type: 'main' });
 
-    const openMediaPicker = (target: 'main' | 'gallery') => {
-        setMediaPickerTarget(target);
+    const openMediaPicker = (type: 'main' | 'gallery' | 'variant_main' | 'variant_gallery', variantIndex?: number) => {
+        setMediaPickerTarget({ type, variantIndex });
         // @ts-ignore
         document.getElementById('media_picker_modal')?.showModal();
     };
 
-    const handleMediaSelect = (url: string) => {
-        if (mediaPickerTarget === 'main') {
-            setFormData(prev => ({ ...prev, image: url }));
-        } else {
-            if (!formData.images?.includes(url)) {
-                setFormData(prev => ({ ...prev, images: [...(prev.images || []), url] }));
+    const handleMediaSelect = (url: string | string[]) => {
+        if (mediaPickerTarget.type === 'main') {
+            if (typeof url === 'string') {
+                setFormData(prev => ({ ...prev, image: url }));
+            }
+        } else if (mediaPickerTarget.type === 'gallery') {
+            const urls = Array.isArray(url) ? url : [url];
+            setFormData(prev => {
+                const currentImages = prev.images || [];
+                const newImages = urls.filter(u => !currentImages.includes(u));
+                return { ...prev, images: [...currentImages, ...newImages] };
+            });
+        } else if (mediaPickerTarget.type === 'variant_main' && mediaPickerTarget.variantIndex !== undefined) {
+            if (typeof url === 'string') {
+                updateVariant(mediaPickerTarget.variantIndex, 'image', url);
+            }
+        } else if (mediaPickerTarget.type === 'variant_gallery' && mediaPickerTarget.variantIndex !== undefined) {
+            const urls = Array.isArray(url) ? url : [url];
+            const currentImages = variants[mediaPickerTarget.variantIndex].images || [];
+            const newImages = urls.filter(u => !currentImages.includes(u));
+            if (newImages.length > 0) {
+                updateVariant(mediaPickerTarget.variantIndex, 'images', [...currentImages, ...newImages]);
             }
         }
         // @ts-ignore
@@ -162,14 +180,16 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             sku: '',
             price: formData.price || 0,
             stock: 0,
-            attributes: selectedAttributes.reduce((acc, attr) => ({ ...acc, [attr]: '' }), {})
+            attributes: selectedAttributes.reduce((acc, attr) => ({ ...acc, [attr]: '' }), {}),
+            image: '',
+            images: []
         };
         setVariants([...variants, newVariant]);
     };
 
     const updateVariant = (index: number, field: keyof Variant | string, value: any) => {
         const updatedVariants = [...variants];
-        if (field === 'sku' || field === 'price' || field === 'stock') {
+        if (field === 'sku' || field === 'price' || field === 'stock' || field === 'image' || field === 'images') {
             updatedVariants[index] = { ...updatedVariants[index], [field]: value };
         } else {
             // It's an attribute
@@ -227,7 +247,9 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                             product_id: newProduct.id,
                             sku: variant.sku,
                             price: variant.price,
-                            stock: variant.stock
+                            stock: variant.stock,
+                            image_url: variant.image,
+                            images: variant.images
                         })
                         .select()
                         .single();
@@ -289,14 +311,48 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
 
             {/* Simple Product Fields */}
             {productType === 'simple' && (
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="form-control">
-                        <label className="label"><span className="label-text">Price</span></label>
-                        <input type="number" name="price" value={formData.price} onChange={handleChange} className="input input-bordered w-full" step="0.01" required />
+                <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="form-control">
+                            <label className="label"><span className="label-text">Price</span></label>
+                            <input type="number" name="price" value={formData.price} onChange={handleChange} className="input input-bordered w-full" step="0.01" required />
+                        </div>
+                        <div className="form-control">
+                            <label className="label"><span className="label-text">Stock</span></label>
+                            <input type="number" name="stock" value={formData.stock} onChange={handleChange} className="input input-bordered w-full" required />
+                        </div>
                     </div>
+
+                    {/* Gallery Images for Simple Product */}
                     <div className="form-control">
-                        <label className="label"><span className="label-text">Stock</span></label>
-                        <input type="number" name="stock" value={formData.stock} onChange={handleChange} className="input input-bordered w-full" required />
+                        <label className="label"><span className="label-text font-semibold">Gallery Images</span></label>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex gap-2 items-center">
+                                <input type="file" accept="image/*" multiple onChange={(e) => handleFileUpload(e, false)} className="file-input file-input-bordered w-full max-w-xs" disabled={uploading} />
+                                <span className="text-sm font-bold">OR</span>
+                                <button type="button" onClick={() => openMediaPicker('gallery')} className="btn btn-outline gap-2">
+                                    <ImageIcon size={16} />
+                                    Select from Library
+                                </button>
+                            </div>
+
+                            {formData.images && formData.images.length > 0 && (
+                                <div className="flex flex-wrap gap-4">
+                                    {formData.images.map((img, index) => (
+                                        <div key={index} className="relative group">
+                                            <img src={img} alt={`Gallery ${index}`} className="w-24 h-24 object-cover rounded border" />
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveImage(index)}
+                                                className="btn btn-xs btn-circle btn-error absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
@@ -384,6 +440,41 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                             />
                                         </div>
                                     </div>
+
+                                    {/* Variant Images */}
+                                    <div className="mt-4 border-t pt-2">
+                                        <label className="label text-xs font-bold">Variant Images</label>
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs w-20">Main:</span>
+                                                <button type="button" onClick={() => openMediaPicker('variant_main', index)} className="btn btn-xs btn-outline gap-1">
+                                                    <ImageIcon size={12} /> Select
+                                                </button>
+                                                {variant.image && (
+                                                    <div className="avatar">
+                                                        <div className="w-8 h-8 rounded border">
+                                                            <img src={variant.image} alt="Variant Main" />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs w-20">Gallery:</span>
+                                                <button type="button" onClick={() => openMediaPicker('variant_gallery', index)} className="btn btn-xs btn-outline gap-1">
+                                                    <ImageIcon size={12} /> Add
+                                                </button>
+                                                <div className="flex gap-1">
+                                                    {variant.images?.map((img, imgIndex) => (
+                                                        <div key={imgIndex} className="avatar">
+                                                            <div className="w-8 h-8 rounded border">
+                                                                <img src={img} alt={`Variant ${imgIndex}`} />
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="flex justify-end mt-2">
                                         <button type="button" onClick={() => removeVariant(index)} className="btn btn-xs btn-error btn-outline">Remove</button>
                                     </div>
@@ -418,7 +509,11 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     </form>
                     <h3 className="font-bold text-lg mb-4">Select Image from Library</h3>
                     <div className="max-h-[60vh] overflow-y-auto">
-                        <MediaGallery selectable onSelect={handleMediaSelect} />
+                        <MediaGallery
+                            selectable
+                            allowMultiple={mediaPickerTarget.type === 'gallery' || mediaPickerTarget.type === 'variant_gallery'}
+                            onSelect={handleMediaSelect}
+                        />
                     </div>
                 </div>
                 <form method="dialog" className="modal-backdrop">

@@ -186,3 +186,8 @@ create policy "Public variant attributes are viewable by everyone." on public.pr
 create policy "Admins can insert variant attributes." on public.product_variant_attributes for insert with check (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
 create policy "Admins can update variant attributes." on public.product_variant_attributes for update using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
 create policy "Admins can delete variant attributes." on public.product_variant_attributes for delete using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+
+alter table public.product_variants
+add column if not exists image_url text,
+add column if not exists images text[];
