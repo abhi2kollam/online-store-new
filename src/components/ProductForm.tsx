@@ -237,30 +237,30 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
     return (
         <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl bg-base-100 p-6 rounded-lg shadow">
             {/* Basic Info */}
+            {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="form-control">
-                    <label className="label"><span className="label-text">Product Name</span></label>
+                    <label className="label"><span className="label-text font-semibold">Product Name</span></label>
                     <input type="text" name="name" value={formData.name} onChange={handleChange} className="input input-bordered w-full" required />
                 </div>
                 <div className="form-control">
-                    <label className="label"><span className="label-text">Category</span></label>
+                    <label className="label"><span className="label-text font-semibold">Category</span></label>
                     <select name="category" value={formData.category} onChange={handleChange} className="select select-bordered w-full" required>
                         <option value="" disabled>Select Category</option>
                         {categories.map((cat) => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
                     </select>
                 </div>
-            </div>
-
-            <div className="form-control">
-                <label className="label"><span className="label-text">Product Type</span></label>
-                <select
-                    value={productType}
-                    onChange={(e) => setProductType(e.target.value as 'simple' | 'variant')}
-                    className="select select-bordered w-full md:w-1/2"
-                >
-                    <option value="simple">Simple Product</option>
-                    <option value="variant">Variable Product</option>
-                </select>
+                <div className="form-control">
+                    <label className="label"><span className="label-text font-semibold">Product Type</span></label>
+                    <select
+                        value={productType}
+                        onChange={(e) => setProductType(e.target.value as 'simple' | 'variant')}
+                        className="select select-bordered w-full"
+                    >
+                        <option value="simple">Simple Product</option>
+                        <option value="variant">Variable Product</option>
+                    </select>
+                </div>
             </div>
 
             {/* Simple Product Fields */}
@@ -283,9 +283,9 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     <h3 className="font-bold text-lg">Variants</h3>
 
                     {/* Attribute Selector */}
-                    <div className="flex gap-2 items-end">
+                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
                         <div className="form-control w-full max-w-xs">
-                            <label className="label"><span className="label-text">Add Attribute</span></label>
+                            <label className="label"><span className="label-text font-semibold">Add Attribute</span></label>
                             <select className="select select-bordered" onChange={handleAttributeSelect} value="">
                                 <option value="" disabled>Select Attribute</option>
                                 {attributes.filter(a => !selectedAttributes.includes(a.name)).map(a => (
@@ -293,16 +293,16 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                 ))}
                             </select>
                         </div>
-                    </div>
 
-                    {/* Selected Attributes */}
-                    <div className="flex flex-wrap gap-2">
-                        {selectedAttributes.map(attr => (
-                            <div key={attr} className="badge badge-primary gap-2 p-3">
-                                {attr}
-                                <button type="button" onClick={() => handleRemoveAttribute(attr)} className="btn btn-xs btn-circle btn-ghost">✕</button>
-                            </div>
-                        ))}
+                        {/* Selected Attributes */}
+                        <div className="flex flex-wrap gap-2 mb-1">
+                            {selectedAttributes.map(attr => (
+                                <div key={attr} className="badge badge-primary gap-2 p-3">
+                                    {attr}
+                                    <button type="button" onClick={() => handleRemoveAttribute(attr)} className="btn btn-xs btn-circle btn-ghost">✕</button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="divider"></div>
@@ -372,18 +372,18 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
 
             {/* Images & Description (Common) */}
             <div className="form-control">
-                <label className="label"><span className="label-text">Main Image</span></label>
-                <div className="flex gap-4 items-center">
+                <label className="label"><span className="label-text font-semibold">Main Image</span></label>
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                     <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, true)} className="file-input file-input-bordered w-full max-w-xs" disabled={uploading} />
-                    <span className="text-sm">OR</span>
+                    <span className="text-sm font-bold">OR</span>
                     <input type="url" name="image" value={formData.image} onChange={handleChange} className="input input-bordered w-full" placeholder="Enter image URL" />
                 </div>
-                {formData.image && <img src={formData.image} alt="Main" className="mt-2 w-32 h-32 object-cover rounded" />}
+                {formData.image && <img src={formData.image} alt="Main" className="mt-4 w-32 h-32 object-cover rounded border" />}
             </div>
 
             <div className="form-control">
-                <label className="label"><span className="label-text">Description</span></label>
-                <textarea name="description" value={formData.description} onChange={handleChange} className="textarea textarea-bordered h-24" required></textarea>
+                <label className="label w-full"><span className="label-text ">Description</span></label>
+                <textarea name="description" value={formData.description} onChange={handleChange} className="textarea textarea-bordered h-24 w-full" required></textarea>
             </div>
 
             <div className="flex justify-end gap-4">
