@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { getOrders, MockOrder } from '@/services/mockData';
 import OrderList from '@/components/OrderList';
 
 export default function ProfilePage() {
+    const supabase = createClient();
     const [user, setUser] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
     const [orders, setOrders] = useState<MockOrder[]>([]);

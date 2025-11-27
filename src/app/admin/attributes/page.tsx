@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 0;
 
 export default async function AdminAttributesPage() {
+    const supabase = await createClient();
     const { data: attributes, error } = await supabase
         .from('attributes')
         .select('*')

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/services/mockData';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 
 interface ProductFormProps {
     initialData?: Product;
@@ -25,6 +25,7 @@ interface Variant {
 }
 
 export default function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
+    const supabase = createClient();
     const router = useRouter();
     const [newImageUrl, setNewImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);

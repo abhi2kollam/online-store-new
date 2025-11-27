@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Product } from '@/services/mockData'; // We'll update this type later
 import AddToCartButton from '@/components/AddToCartButton';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 
 interface Variant {
     id: number;
@@ -18,6 +18,7 @@ interface ProductDetailsProps {
 }
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
+    const supabase = createClient();
     const [variants, setVariants] = useState<Variant[]>([]);
     const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
     const [currentVariant, setCurrentVariant] = useState<Variant | null>(null);

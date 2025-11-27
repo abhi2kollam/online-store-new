@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 0;
 
 export default async function AdminProductsPage() {
+    const supabase = await createClient();
     const { data: products, error } = await supabase
         .from('products')
         .select('*, categories(name)')

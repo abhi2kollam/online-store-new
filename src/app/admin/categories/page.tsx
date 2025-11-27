@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 0; // Disable caching for admin page
 
 export default async function AdminCategoriesPage() {
+    const supabase = await createClient();
     const { data: categories, error } = await supabase
         .from('categories')
         .select('*')

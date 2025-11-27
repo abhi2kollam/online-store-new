@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import ImageGallery from '@/components/ImageGallery';
 import TrendingProductCard from '@/components/TrendingProductCard';
 import ProductDetails from '@/components/ProductDetails';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 0;
 
@@ -15,6 +15,7 @@ interface ProductPageProps {
 
 export default async function ProductPage({ params }: ProductPageProps) {
     const { id } = await params;
+    const supabase = await createClient();
 
     // Fetch product from Supabase
     const { data: product, error } = await supabase

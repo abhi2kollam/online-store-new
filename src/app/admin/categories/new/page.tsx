@@ -1,9 +1,10 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 
 export default function NewCategoryPage() {
+    const supabase = createClient();
     const router = useRouter();
     const [name, setName] = useState('');
     const [loading, setLoading] = useState(false);
