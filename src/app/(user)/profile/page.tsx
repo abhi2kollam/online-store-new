@@ -184,7 +184,7 @@ export default function ProfilePage() {
                 {user ? (
                     <div className="flex gap-2">
                         {profile?.role === 'admin' && (
-                            <button onClick={() => router.push('/admin')} className="btn btn-primary">
+                            <button onClick={() => router.push('/admin')} className="btn btn-neutral">
                                 Admin Dashboard
                             </button>
                         )}
@@ -193,7 +193,7 @@ export default function ProfilePage() {
                         </button>
                     </div>
                 ) : (
-                    <button onClick={() => router.push('/login')} className="btn btn-primary">
+                    <button onClick={() => router.push('/login')} className="btn btn-neutral">
                         Login
                     </button>
                 )}
@@ -229,7 +229,7 @@ export default function ProfilePage() {
                             </div>
                         </div>
                         <div className="flex justify-end">
-                            <button type="submit" className="btn btn-primary" disabled={updating}>
+                            <button type="submit" className="btn btn-neutral" disabled={updating}>
                                 {updating ? 'Saving...' : 'Save Changes'}
                             </button>
                         </div>
@@ -246,7 +246,7 @@ export default function ProfilePage() {
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">Saved Addresses</h2>
                     <button
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-neutral btn-sm"
                         onClick={() => setShowAddressForm(!showAddressForm)}
                     >
                         {showAddressForm ? 'Cancel' : 'Add New Address'}

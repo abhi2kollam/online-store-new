@@ -106,7 +106,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         <div className="space-y-6">
             <div>
                 <h1 className="text-4xl font-bold">{product.name}</h1>
-                <div className="badge badge-secondary mt-2">{product.categories?.name || product.category}</div>
+                <div className="badge badge-accent mt-2">{product.categories?.name || product.category}</div>
             </div>
             <p className="text-2xl font-bold text-primary">${displayPrice.toFixed(2)}</p>
             <p className="text-lg text-base-content/80">{product.description}</p>
@@ -121,7 +121,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                                 {values.map(value => (
                                     <button
                                         key={value}
-                                        className={`btn btn-sm ${selectedAttributes[name] === value ? 'btn-primary' : 'btn-outline'}`}
+                                        className={`btn btn-sm ${selectedAttributes[name] === value ? 'btn-neutral' : 'btn-outline'}`}
                                         onClick={() => handleAttributeSelect(name, value)}
                                     >
                                         {value}
@@ -145,7 +145,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
                     variantId={currentVariant?.id}
                     disabled={isOutOfStock || (product.product_type === 'variant' && !currentVariant)}
                 />
-                <button className="btn btn-outline btn-secondary">Add to Wishlist</button>
+                <button className="btn btn-outline btn-accent">Add to Wishlist</button>
             </div>
 
             <div className={`mt-4 ${isOutOfStock ? 'text-error' : 'text-info'}`}>

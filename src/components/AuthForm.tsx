@@ -111,7 +111,7 @@ export default function AuthForm({ type }: AuthFormProps) {
                     )}
                 </div>
                 <div className="form-control mt-6">
-                    <button className="btn btn-primary" disabled={loading}>
+                    <button className="btn btn-neutral" disabled={loading}>
                         {loading ? 'Loading...' : type === 'login' ? 'Login' : 'Sign Up'}
                     </button>
                 </div>

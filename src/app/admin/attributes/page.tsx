@@ -19,7 +19,7 @@ export default async function AdminAttributesPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Attributes</h1>
-                <Link href="/admin/attributes/new" className="btn btn-primary">
+                <Link href="/admin/attributes/new" className="btn btn-neutral">
                     Add New Attribute
                 </Link>
             </div>

@@ -19,7 +19,7 @@ export default async function AdminCategoriesPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Categories</h1>
-                <Link href="/admin/categories/new" className="btn btn-primary">
+                <Link href="/admin/categories/new" className="btn btn-neutral">
                     Add New Category
                 </Link>
             </div>

@@ -87,7 +87,7 @@ export default function NewAttributePage() {
                         <Link href="/admin/attributes" className="btn btn-ghost">
                             Cancel
                         </Link>
-                        <button type="submit" className="btn btn-primary" disabled={loading}>
+                        <button type="submit" className="btn btn-neutral" disabled={loading}>
                             {loading ? 'Creating...' : 'Create Attribute'}
                         </button>
                     </div>

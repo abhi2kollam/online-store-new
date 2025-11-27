@@ -14,7 +14,7 @@ export default function AddToCartButton({ product, variantId, disabled }: AddToC
 
     return (
         <button
-            className="btn btn-primary"
+            className="btn btn-neutral"
             onClick={() => addToCart(product, variantId)}
             disabled={loading || disabled}
         >

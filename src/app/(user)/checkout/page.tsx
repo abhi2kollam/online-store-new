@@ -75,7 +75,7 @@ export default function CheckoutPage() {
 
                     <button
                         type="submit"
-                        className="btn btn-primary w-full mt-4"
+                        className="btn btn-neutral w-full mt-4"
                         disabled={isProcessing}
                     >
                         {isProcessing ? 'Processing...' : 'Place Order'}

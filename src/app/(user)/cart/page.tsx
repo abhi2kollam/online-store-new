@@ -11,7 +11,7 @@ export default function CartPage() {
         return (
             <div className="text-center py-12">
                 <h1 className="text-3xl font-bold mb-4">Your Cart is Empty</h1>
-                <Link href="/" className="btn btn-primary">
+                <Link href="/" className="btn btn-neutral">
                     Start Shopping
                 </Link>
             </div>
@@ -59,7 +59,7 @@ export default function CartPage() {
                 </button>
                 <div className="text-right">
                     <p className="text-2xl font-bold mb-4">Total: ${total.toFixed(2)}</p>
-                    <Link href="/checkout" className="btn btn-primary btn-lg">
+                    <Link href="/checkout" className="btn btn-neutral btn-lg">
                         Proceed to Checkout
                     </Link>
                 </div>

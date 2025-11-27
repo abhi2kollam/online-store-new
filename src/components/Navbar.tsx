@@ -89,7 +89,7 @@ const Navbar = () => {
                             </ul>
                         </div>
                     ) : (
-                        <li><Link href="/login" className="btn btn-primary btn-sm">Login</Link></li>
+                        <li><Link href="/login" className="btn btn-neutral btn-sm">Login</Link></li>
                     )}
                 </ul>
             </div>

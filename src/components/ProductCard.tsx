@@ -46,7 +46,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <div className="card-body p-4">
                 <h2 className="card-title text-lg">
                     {product.name}
-                    <span className="badge badge-secondary badge-sm">{product.category}</span>
+                    <span className="badge badge-accent badge-sm">{product.category}</span>
                 </h2>
                 <div className="card-actions justify-between items-center mt-2">
                     <span className="text-xl font-bold">${product.price.toFixed(2)}</span>

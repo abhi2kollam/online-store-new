@@ -54,7 +54,7 @@ export default function NewCategoryPage() {
                     <button type="button" className="btn btn-ghost" onClick={() => router.back()} disabled={loading}>
                         Cancel
                     </button>
-                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                    <button type="submit" className="btn btn-neutral" disabled={loading}>
                         {loading ? 'Creating...' : 'Create'}
                     </button>
                 </div>

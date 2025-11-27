@@ -310,7 +310,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     {/* Variant List */}
                     {selectedAttributes.length > 0 && (
                         <div className="space-y-4">
-                            <button type="button" onClick={addVariant} className="btn btn-secondary btn-sm">+ Add Variant</button>
+                            <button type="button" onClick={addVariant} className="btn btn-accent btn-sm">+ Add Variant</button>
 
                             {variants.map((variant, index) => (
                                 <div key={index} className="card bg-base-100 shadow-sm p-4 border">
@@ -388,7 +388,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
 
             <div className="flex justify-end gap-4">
                 <button type="button" className="btn btn-ghost" onClick={() => router.back()} disabled={uploading}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={uploading}>{uploading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}</button>
+                <button type="submit" className="btn btn-neutral" disabled={uploading}>{uploading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}</button>
             </div>
         </form>
     );
