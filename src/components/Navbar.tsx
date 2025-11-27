@@ -65,7 +65,7 @@ const Navbar = () => {
                     {user ? (
                         <div className="dropdown dropdown-end">
                             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
-                                <div className="bg-neutral-500 text-neutral-content rounded-full w-10 flex items-center justify-center">
+                                <div className=" rounded-full w-10 flex items-center justify-center">
                                     <UserIcon className="w-6 h-6" />
                                 </div>
                             </div>

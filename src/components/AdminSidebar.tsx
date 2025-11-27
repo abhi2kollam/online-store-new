@@ -1,12 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-import { LayoutDashboard, Layers, Package, ShoppingCart, Users, Store } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
+import { LayoutDashboard, Layers, Package, ShoppingCart, Users, Store, LogOut } from 'lucide-react';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+    };
 
     const links = [
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -44,6 +51,12 @@ export default function AdminSidebar() {
                         <Store size={20} />
                         Back to Store
                     </Link>
+                </li>
+                <li>
+                    <button onClick={handleLogout} className="text-error">
+                        <LogOut size={20} />
+                        Logout
+                    </button>
                 </li>
             </ul>
         </div>
