@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LayoutDashboard, Layers, Package, ShoppingCart, Users, Store, LogOut } from 'lucide-react';
+import { LayoutDashboard, Layers, Package, ShoppingCart, Users, Store, LogOut, Image } from 'lucide-react';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
@@ -27,7 +27,16 @@ export default function AdminSidebar() {
         },
         { href: '/admin/categories', label: 'Categories', icon: Layers },
         { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
+        { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
         { href: '/admin/users', label: 'Users', icon: Users },
+        {
+            label: 'Media',
+            icon: Image,
+            children: [
+                { href: '/admin/media/products', label: 'Products' },
+                { href: '/admin/media/promotions', label: 'Promotions' },
+            ]
+        },
     ];
 
     return (
@@ -43,7 +52,10 @@ export default function AdminSidebar() {
                     if (link.children) {
                         return (
                             <li key={index}>
-                                <details open={pathname?.startsWith('/admin/products') || pathname?.startsWith('/admin/attributes')}>
+                                <details open={
+                                    (link.label === 'Products' && (pathname?.startsWith('/admin/products') || pathname?.startsWith('/admin/attributes'))) ||
+                                    (link.label === 'Media' && pathname?.startsWith('/admin/media'))
+                                }>
                                     <summary>
                                         <Icon size={20} />
                                         {link.label}

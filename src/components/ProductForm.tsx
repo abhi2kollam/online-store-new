@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/services/mockData';
 import { createClient } from '@/utils/supabase/client';
+import { Image as ImageIcon } from 'lucide-react';
+import MediaGallery from '@/components/MediaGallery';
 
 interface ProductFormProps {
     initialData?: Product;
@@ -117,6 +119,28 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             ...prev,
             images: prev.images?.filter((_, i) => i !== index) || [],
         }));
+    };
+
+    // Media Picker Logic
+    const [showMediaModal, setShowMediaModal] = useState(false);
+    const [mediaPickerTarget, setMediaPickerTarget] = useState<'main' | 'gallery'>('main');
+
+    const openMediaPicker = (target: 'main' | 'gallery') => {
+        setMediaPickerTarget(target);
+        // @ts-ignore
+        document.getElementById('media_picker_modal')?.showModal();
+    };
+
+    const handleMediaSelect = (url: string) => {
+        if (mediaPickerTarget === 'main') {
+            setFormData(prev => ({ ...prev, image: url }));
+        } else {
+            if (!formData.images?.includes(url)) {
+                setFormData(prev => ({ ...prev, images: [...(prev.images || []), url] }));
+            }
+        }
+        // @ts-ignore
+        document.getElementById('media_picker_modal')?.close();
     };
 
     // Variant Logic
@@ -376,10 +400,31 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                     <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, true)} className="file-input file-input-bordered w-full max-w-xs" disabled={uploading} />
                     <span className="text-sm font-bold">OR</span>
+                    <button type="button" onClick={() => openMediaPicker('main')} className="btn btn-outline gap-2">
+                        <ImageIcon size={16} />
+                        Select from Library
+                    </button>
+                    <span className="text-sm font-bold">OR</span>
                     <input type="url" name="image" value={formData.image} onChange={handleChange} className="input input-bordered w-full" placeholder="Enter image URL" />
                 </div>
                 {formData.image && <img src={formData.image} alt="Main" className="mt-4 w-32 h-32 object-cover rounded border" />}
             </div>
+
+            {/* Media Picker Modal */}
+            <dialog id="media_picker_modal" className="modal">
+                <div className="modal-box w-11/12 max-w-5xl">
+                    <form method="dialog">
+                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                    </form>
+                    <h3 className="font-bold text-lg mb-4">Select Image from Library</h3>
+                    <div className="max-h-[60vh] overflow-y-auto">
+                        <MediaGallery selectable onSelect={handleMediaSelect} />
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
 
             <div className="form-control">
                 <label className="label w-full"><span className="label-text ">Description</span></label>
