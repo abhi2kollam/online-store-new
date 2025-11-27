@@ -29,6 +29,7 @@ export default async function AdminCategoriesPage() {
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Image</th>
                             <th>Name</th>
                             <th>Slug</th>
                             <th>Actions</th>
@@ -39,11 +40,22 @@ export default async function AdminCategoriesPage() {
                             <tr key={category.id}>
                                 <td>{category.id}</td>
                                 <td>
+                                    <div className="avatar">
+                                        <div className="mask mask-squircle w-12 h-12">
+                                            {category.image_url ? (
+                                                <img src={category.image_url} alt={category.name} />
+                                            ) : (
+                                                <div className="bg-base-200 w-full h-full flex items-center justify-center text-xs">No Img</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
                                     <div className="font-bold">{category.name}</div>
                                 </td>
                                 <td>{category.slug}</td>
-                                <td className="flex gap-2">
-                                    <button className="btn btn-sm btn-ghost">Edit</button>
+                                <td>
+                                    <Link href={`/admin/categories/${category.id}`} className="btn btn-sm btn-ghost">Edit</Link>
                                     <button className="btn btn-sm btn-ghost text-error">Delete</button>
                                 </td>
                             </tr>

@@ -51,10 +51,7 @@ export default function AdminSidebar() {
                     if (link.children) {
                         return (
                             <li key={index}>
-                                <details open={
-                                    (link.label === 'Products' && (pathname?.startsWith('/admin/products') || pathname?.startsWith('/admin/attributes'))) ||
-                                    (link.label === 'Media' && pathname?.startsWith('/admin/media'))
-                                }>
+                                <details open>
                                     <summary>
                                         <Icon size={20} />
                                         {link.label}
