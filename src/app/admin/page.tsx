@@ -3,6 +3,8 @@ import { createClient } from '@/utils/supabase/server';
 export default async function AdminDashboard() {
     const supabase = await createClient();
     const { count: totalProducts } = await supabase.from('products').select('*', { count: 'exact', head: true });
+    const { count: totalCustomers } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('role', 'admin');
+    const { count: totalCategories } = await supabase.from('categories').select('*', { count: 'exact', head: true });
 
     // Orders not implemented yet
     const totalRevenue = 0;
@@ -35,6 +37,22 @@ export default async function AdminDashboard() {
                         <div className="stat-title">Total Products</div>
                         <div className="stat-value">{totalProducts || 0}</div>
                         <div className="stat-desc">In stock</div>
+                    </div>
+                </div>
+
+                <div className="stats shadow">
+                    <div className="stat">
+                        <div className="stat-title">Total Customers</div>
+                        <div className="stat-value">{totalCustomers || 0}</div>
+                        <div className="stat-desc">Registered users</div>
+                    </div>
+                </div>
+
+                <div className="stats shadow">
+                    <div className="stat">
+                        <div className="stat-title">Total Categories</div>
+                        <div className="stat-value">{totalCategories || 0}</div>
+                        <div className="stat-desc">Active categories</div>
                     </div>
                 </div>
             </div>
