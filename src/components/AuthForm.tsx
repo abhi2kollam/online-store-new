@@ -41,7 +41,7 @@ export default function AuthForm({ type }: AuthFormProps) {
                     password,
                 });
                 if (error) throw error;
-                router.push('/profile');
+                router.push('/');
             }
         } catch (err: any) {
             setError(err.message);

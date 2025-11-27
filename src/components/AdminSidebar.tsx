@@ -17,9 +17,15 @@ export default function AdminSidebar() {
 
     const links = [
         { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+        {
+            label: 'Products',
+            icon: Package,
+            children: [
+                { href: '/admin/products', label: 'List' },
+                { href: '/admin/attributes', label: 'Attributes' },
+            ]
+        },
         { href: '/admin/categories', label: 'Categories', icon: Layers },
-        { href: '/admin/products', label: 'Products', icon: Package },
-        { href: '/admin/attributes', label: 'Attributes', icon: Layers },
         { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
         { href: '/admin/users', label: 'Users', icon: Users },
     ];
@@ -31,12 +37,38 @@ export default function AdminSidebar() {
                 <li className="mb-4">
                     <Link href="/admin" className="text-xl font-bold px-2">Admin Panel</Link>
                 </li>
-                {links.map((link) => {
+                {links.map((link, index) => {
                     const Icon = link.icon;
+
+                    if (link.children) {
+                        return (
+                            <li key={index}>
+                                <details open={pathname?.startsWith('/admin/products') || pathname?.startsWith('/admin/attributes')}>
+                                    <summary>
+                                        <Icon size={20} />
+                                        {link.label}
+                                    </summary>
+                                    <ul>
+                                        {link.children.map((child) => (
+                                            <li key={child.href}>
+                                                <Link
+                                                    href={child.href}
+                                                    className={pathname === child.href ? 'active' : ''}
+                                                >
+                                                    {child.label}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </details>
+                            </li>
+                        );
+                    }
+
                     return (
                         <li key={link.href}>
                             <Link
-                                href={link.href}
+                                href={link.href!}
                                 className={pathname === link.href ? 'active' : ''}
                             >
                                 <Icon size={20} />
