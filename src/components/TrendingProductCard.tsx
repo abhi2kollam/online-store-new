@@ -11,13 +11,14 @@ const TrendingProductCard = ({ product }: TrendingProductCardProps) => {
     const originalPrice = (product.price * 1.2).toFixed(2);
 
     return (
-        <div className="relative w-full h-[400px] rounded-3xl overflow-hidden group">
+        <Link href={`/product/${product.id}`} className="relative w-full h-[400px] rounded-3xl overflow-hidden group block">
             {/* Background Image */}
             <div className="absolute inset-0 bg-gray-200">
                 <Image
                     src={product.image}
                     alt={product.name}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
             </div>
@@ -36,13 +37,13 @@ const TrendingProductCard = ({ product }: TrendingProductCardProps) => {
                         <span className="text-gray-400 line-through text-sm">${originalPrice}</span>
                     </div>
                 </div>
-                <Link href={`/product/${product.id}`} className="btn btn-circle btn-sm btn-ghost bg-gray-100 hover:bg-gray-200 text-gray-900">
+                <div className="btn btn-circle btn-sm btn-ghost bg-gray-100 hover:bg-gray-200 text-gray-900">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                     </svg>
-                </Link>
+                </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
