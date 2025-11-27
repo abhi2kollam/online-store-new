@@ -1,7 +1,6 @@
-import { getOrders } from '@/services/mockData';
-
 export default async function AdminOrdersPage() {
-    const orders = await getOrders();
+    // Orders not implemented yet
+    const orders: any[] = [];
 
     return (
         <div className="space-y-6">
@@ -20,24 +19,30 @@ export default async function AdminOrdersPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map((order) => (
-                            <tr key={order.id}>
-                                <td>{order.id}</td>
-                                <td>{order.date}</td>
-                                <td>Guest User</td>
-                                <td>${order.total.toFixed(2)}</td>
-                                <td>
-                                    <div className={`badge ${order.status === 'Delivered' ? 'badge-success' :
+                        {orders.length > 0 ? (
+                            orders.map((order) => (
+                                <tr key={order.id}>
+                                    <td>{order.id}</td>
+                                    <td>{order.date}</td>
+                                    <td>Guest User</td>
+                                    <td>${order.total.toFixed(2)}</td>
+                                    <td>
+                                        <div className={`badge ${order.status === 'Delivered' ? 'badge-success' :
                                             order.status === 'Processing' ? 'badge-warning' : 'badge-info'
-                                        }`}>
-                                        {order.status}
-                                    </div>
-                                </td>
-                                <td>
-                                    <button className="btn btn-xs btn-outline">View Details</button>
-                                </td>
+                                            }`}>
+                                            {order.status}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button className="btn btn-xs btn-outline">View Details</button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={6} className="text-center py-4">No orders found</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>

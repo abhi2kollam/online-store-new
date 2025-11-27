@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Product } from '@/services/mockData'; // We'll update this type later
+import { Product } from '@/types'; // We'll update this type later
 import AddToCartButton from '@/components/AddToCartButton';
 import { createClient } from '@/utils/supabase/client';
 

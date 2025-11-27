@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Product } from '@/services/mockData';
+import { Product } from '@/types';
 
 interface TrendingProductCardProps {
     product: Product;

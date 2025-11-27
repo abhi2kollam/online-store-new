@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import { getOrders, MockOrder } from '@/services/mockData';
+import { Order } from '@/types';
 import OrderList from '@/components/OrderList';
 
 export default function ProfilePage() {
     const supabase = createClient();
     const [user, setUser] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
-    const [orders, setOrders] = useState<MockOrder[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [formData, setFormData] = useState({
@@ -62,9 +62,9 @@ export default function ProfilePage() {
                 }
             }
 
-            // Fetch mock orders
-            const mockOrders = await getOrders();
-            setOrders(mockOrders);
+            // Fetch mock orders - removed
+            // const mockOrders = await getOrders();
+            setOrders([]);
             setLoading(false);
         };
 

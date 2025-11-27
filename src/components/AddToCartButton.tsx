@@ -1,7 +1,7 @@
 'use client';
 
 import { useCart } from '@/context/CartContext';
-import { Product } from '@/services/mockData';
+import { Product } from '@/types';
 
 interface AddToCartButtonProps {
     product: Product;

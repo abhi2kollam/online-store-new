@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import TrendingProductCard from './TrendingProductCard';
-import { Product } from '@/services/mockData';
+import { Product } from '@/types';
 
 interface TrendingSectionProps {
     title: string;

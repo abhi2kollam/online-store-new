@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Product } from '@/services/mockData';
+import { Product } from '@/types';
 import { createClient } from '@/utils/supabase/client';
 import { Image as ImageIcon } from 'lucide-react';
 import MediaGallery from '@/components/MediaGallery';

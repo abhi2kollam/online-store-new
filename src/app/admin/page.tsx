@@ -1,12 +1,13 @@
-import { getOrders, getProducts } from '@/services/mockData';
+import { createClient } from '@/utils/supabase/server';
 
 export default async function AdminDashboard() {
-    const products = await getProducts();
-    const orders = await getOrders();
+    const supabase = await createClient();
+    const { count: totalProducts } = await supabase.from('products').select('*', { count: 'exact', head: true });
 
-    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-    const totalOrders = orders.length;
-    const totalProducts = products.length;
+    // Orders not implemented yet
+    const totalRevenue = 0;
+    const totalOrders = 0;
+    const orders: any[] = [];
 
     return (
         <div className="space-y-8">
@@ -25,14 +26,14 @@ export default async function AdminDashboard() {
                     <div className="stat">
                         <div className="stat-title">Total Orders</div>
                         <div className="stat-value text-secondary">{totalOrders}</div>
-                        <div className="stat-desc">↗︎ 400 (22%)</div>
+                        <div className="stat-desc">↗︎ 0 (0%)</div>
                     </div>
                 </div>
 
                 <div className="stats shadow">
                     <div className="stat">
                         <div className="stat-title">Total Products</div>
-                        <div className="stat-value">{totalProducts}</div>
+                        <div className="stat-value">{totalProducts || 0}</div>
                         <div className="stat-desc">In stock</div>
                     </div>
                 </div>
@@ -53,14 +54,20 @@ export default async function AdminDashboard() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {orders.slice(0, 5).map((order) => (
-                                        <tr key={order.id}>
-                                            <td>{order.id}</td>
-                                            <td>{order.date}</td>
-                                            <td>${order.total.toFixed(2)}</td>
-                                            <td>{order.status}</td>
+                                    {orders.length > 0 ? (
+                                        orders.map((order) => (
+                                            <tr key={order.id}>
+                                                <td>{order.id}</td>
+                                                <td>{order.date}</td>
+                                                <td>${order.total.toFixed(2)}</td>
+                                                <td>{order.status}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={4} className="text-center">No orders found</td>
                                         </tr>
-                                    ))}
+                                    )}
                                 </tbody>
                             </table>
                         </div>
