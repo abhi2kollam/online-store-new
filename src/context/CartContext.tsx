@@ -141,7 +141,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
             if (existingItemIndex > -1) {
                 const newItems = [...prevItems];
-                newItems[existingItemIndex].quantity += quantity;
+                newItems[existingItemIndex] = {
+                    ...newItems[existingItemIndex],
+                    quantity: newItems[existingItemIndex].quantity + quantity
+                };
                 return newItems;
             }
             return [...prevItems, newItem];
