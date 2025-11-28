@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import CartDrawerWrapper from "@/components/CartDrawerWrapper";
+import { CartProvider } from "@/context/CartContext";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -19,10 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="light" className={`${outfit.variable}`}>
-      <body
-        className="font-sans antialiased"
-      >
-        {children}
+      <body className="font-sans antialiased">
+        <CartProvider>
+          <CartDrawerWrapper>
+            {children}
+          </CartDrawerWrapper>
+        </CartProvider>
       </body>
     </html>
   );

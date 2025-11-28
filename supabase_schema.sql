@@ -191,3 +191,33 @@ create policy "Admins can delete variant attributes." on public.product_variant_
 alter table public.product_variants
 add column if not exists image_url text,
 add column if not exists images text[];
+
+-- Create Cart Items Table
+create table public.cart_items (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  product_id bigint references public.products(id) on delete cascade not null,
+  variant_id bigint references public.product_variants(id) on delete cascade,
+  quantity integer not null default 1,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id, product_id, variant_id)
+);
+
+-- Enable RLS on Cart Items
+alter table public.cart_items enable row level security;
+
+create policy "Users can view their own cart items."
+  on public.cart_items for select
+  using ( auth.uid() = user_id );
+
+create policy "Users can insert their own cart items."
+  on public.cart_items for insert
+  with check ( auth.uid() = user_id );
+
+create policy "Users can update their own cart items."
+  on public.cart_items for update
+  using ( auth.uid() = user_id );
+
+create policy "Users can delete their own cart items."
+  on public.cart_items for delete
+  using ( auth.uid() = user_id );

@@ -27,7 +27,7 @@ export default async function Home() {
   const trendingProducts = products?.map(p => ({
     ...p,
     id: p.id.toString(),
-    image: p.image_url,
+    image_url: p.image_url,
     category: categoryMap.get(p.category_id) || 'Uncategorized',
   })) || [];
 

@@ -15,7 +15,7 @@ const TrendingProductCard = ({ product }: TrendingProductCardProps) => {
             {/* Background Image */}
             <div className="absolute inset-0 bg-gray-200">
                 <Image
-                    src={product.image}
+                    src={product.image_url}
                     alt={product.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
