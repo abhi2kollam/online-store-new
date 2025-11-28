@@ -33,15 +33,17 @@ const ProductCard = ({ product }: ProductCardProps) => {
                         {product.description}
                     </p>
                 </div>
-                <button
-                    onClick={handleAddToCart}
-                    className="absolute top-3 right-3 btn btn-circle btn-sm btn-accent opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg z-10 hover:scale-110"
-                    aria-label="Add to cart"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </button>
+                {product.product_type === 'simple' && (
+                    <button
+                        onClick={handleAddToCart}
+                        className="absolute top-3 right-3 btn btn-circle btn-sm btn-accent opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg z-10 hover:scale-110"
+                        aria-label="Add to cart"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </button>
+                )}
             </figure>
             <div className="card-body p-4">
                 <h2 className="card-title text-lg">
