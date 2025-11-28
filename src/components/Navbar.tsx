@@ -16,6 +16,8 @@ const Navbar = () => {
     const [user, setUser] = useState<User | null>(null);
     const supabase = createClient();
 
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
     useEffect(() => {
         const getUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -40,60 +42,93 @@ const Navbar = () => {
     };
 
     return (
-        <div className="navbar glass shadow-md sticky top-0 z-50">
-            <div className="navbar-start">
-                <Link href="/" className="btn btn-ghost text-accent text-2xl font-extrabold tracking-tight">Online Store</Link>
-            </div>
-            <div className="navbar-center hidden lg:flex">
-                <ul className="menu menu-horizontal px-1 gap-4 ">
-                    <li><Link href="/" className={isActive('/')}>Home</Link></li>
-                    <li><Link href="/shop" className={isActive('/shop')}>Shop</Link></li>
-                </ul>
-            </div>
-            <div className="navbar-end">
-                <ul className="menu menu-horizontal items-center px-1 gap-2">
-                    <li>
-                        <label htmlFor="cart-drawer" className="btn btn-ghost btn-circle drawer-button">
-                            <div className="indicator">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                {itemCount > 0 && (
-                                    <span className="badge badge-sm badge-accent indicator-item">{itemCount}</span>
-                                )}
-                            </div>
-                        </label>
-                    </li>
-                    {user ? (
-                        <div className="dropdown dropdown-end">
-                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
-                                <div className=" rounded-full w-10 flex items-center justify-center">
-                                    <UserIcon className="w-6 h-6" />
+        <>
+            <div className="navbar glass shadow-md sticky top-0 z-50">
+                <div className="navbar-start">
+                    <button
+                        className="btn btn-ghost md:hidden"
+                        onClick={() => setIsMobileMenuOpen(true)}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
+                        </svg>
+                    </button>
+                    <Link href="/" className="btn btn-ghost text-accent text-2xl font-extrabold tracking-tight">Online Store</Link>
+                </div>
+                <div className="navbar-center hidden md:flex">
+                    <ul className="menu menu-horizontal px-1 gap-4 ">
+                        <li><Link href="/" className={isActive('/')}>Home</Link></li>
+                        <li><Link href="/shop" className={isActive('/shop')}>Shop</Link></li>
+                    </ul>
+                </div>
+                <div className="navbar-end">
+                    <ul className="menu menu-horizontal items-center px-1 gap-2">
+                        <li>
+                            <label htmlFor="cart-drawer" className="btn btn-ghost btn-circle drawer-button">
+                                <div className="indicator">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                    {itemCount > 0 && (
+                                        <span className="badge badge-sm badge-accent indicator-item">{itemCount}</span>
+                                    )}
                                 </div>
+                            </label>
+                        </li>
+                        {user ? (
+                            <div className="dropdown dropdown-end">
+                                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
+                                    <div className=" rounded-full w-10 flex items-center justify-center">
+                                        <UserIcon className="w-6 h-6" />
+                                    </div>
+                                </div>
+                                <ul tabIndex={0} className="mt-3 z-1 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
+                                    <li>
+                                        <Link href="/profile" className="justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <UserCircle className="w-4 h-4" />
+                                                Profile
+                                            </div>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <button onClick={handleLogout} className="text-error">
+                                            <div className="flex items-center gap-2">
+                                                <LogOut className="w-4 h-4" />
+                                                Logout
+                                            </div>
+                                        </button>
+                                    </li>
+                                </ul>
                             </div>
-                            <ul tabIndex={0} className="mt-3 z-1 p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
-                                <li>
-                                    <Link href="/profile" className="justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <UserCircle className="w-4 h-4" />
-                                            Profile
-                                        </div>
-                                    </Link>
-                                </li>
-                                <li>
-                                    <button onClick={handleLogout} className="text-error">
-                                        <div className="flex items-center gap-2">
-                                            <LogOut className="w-4 h-4" />
-                                            Logout
-                                        </div>
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    ) : (
-                        <li><Link href="/login" className="btn btn-neutral btn-sm">Login</Link></li>
-                    )}
-                </ul>
+                        ) : (
+                            <li><Link href="/login" className="btn btn-neutral btn-sm">Login</Link></li>
+                        )}
+                    </ul>
+                </div>
             </div>
-        </div>
+
+            {/* Mobile Menu Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-[100] bg-black/50 md:hidden" onClick={() => setIsMobileMenuOpen(false)}>
+                    <div
+                        className="fixed left-0 top-0 h-full w-64 bg-base-100 p-4 shadow-lg transition-transform duration-300 ease-in-out"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold text-accent">Menu</h2>
+                            <button onClick={() => setIsMobileMenuOpen(false)} className="btn btn-ghost btn-circle btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <ul className="menu p-0 text-lg gap-2">
+                            <li><Link href="/" onClick={() => setIsMobileMenuOpen(false)} className={pathname === '/' ? 'active' : ''}>Home</Link></li>
+                            <li><Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className={pathname === '/shop' ? 'active' : ''}>Shop</Link></li>
+                        </ul>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
 
