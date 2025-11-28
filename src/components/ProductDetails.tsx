@@ -15,6 +15,7 @@ interface Variant {
     attributes: Record<string, string>;
     image_url?: string;
     images?: string[];
+    is_default?: boolean;
 }
 
 interface ProductDetailsProps {
@@ -39,7 +40,7 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
             const { data: variantsData, error } = await supabase
                 .from('product_variants')
                 .select(`
-                    id, sku, price, stock, image_url, images,
+                    id, sku, price, stock, image_url, images, is_default,
                     product_variant_attributes (
                         value,
                         attributes (name)
@@ -67,6 +68,7 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
                     stock: v.stock,
                     image_url: v.image_url,
                     images: v.images,
+                    is_default: v.is_default,
                     attributes
                 };
             });
@@ -88,11 +90,11 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
             });
             setAvailableAttributes(finalAttrs);
 
-            // Select first variant by default
+            // Select default variant or first variant
             if (formattedVariants.length > 0) {
-                const first = formattedVariants[0];
-                setSelectedAttributes(first.attributes);
-                setCurrentVariant(first);
+                const defaultVariant = formattedVariants.find(v => v.is_default) || formattedVariants[0];
+                setSelectedAttributes(defaultVariant.attributes);
+                setCurrentVariant(defaultVariant);
             }
             setLoadingVariants(false);
         };

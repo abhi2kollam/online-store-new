@@ -221,3 +221,5 @@ create policy "Users can update their own cart items."
 create policy "Users can delete their own cart items."
   on public.cart_items for delete
   using ( auth.uid() = user_id );
+
+alter table product_variants add column is_default boolean default false;

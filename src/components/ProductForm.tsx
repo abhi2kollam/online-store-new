@@ -27,6 +27,7 @@ interface Variant {
     attributes: Record<string, string>; // { "Color": "Red", "Size": "XL" }
     image_url?: string;
     images?: string[];
+    is_default?: boolean;
 }
 
 export default function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
@@ -88,7 +89,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             const { data: variantsData, error } = await supabase
                 .from('product_variants')
                 .select(`
-                    id, sku, price, stock, image_url, images,
+                    id, sku, price, stock, image_url, images, is_default,
                     product_variant_attributes (
                         value,
                         attributes (name)
@@ -117,6 +118,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                         stock: v.stock,
                         image_url: v.image_url,
                         images: v.images,
+                        is_default: v.is_default,
                         attributes
                     };
                 });
@@ -240,14 +242,20 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             stock: 0,
             attributes: selectedAttributes.reduce((acc, attr) => ({ ...acc, [attr]: '' }), {}),
             image_url: '',
-            images: []
+            images: [],
+            is_default: false
         };
         setVariants([...variants, newVariant]);
     };
 
-    const updateVariant = (index: number, field: keyof Variant | string, value: string | number | string[]) => {
+    const updateVariant = (index: number, field: keyof Variant | string, value: string | number | string[] | boolean) => {
         const updatedVariants = [...variants];
-        if (field === 'sku' || field === 'price' || field === 'stock' || field === 'image' || field === 'images') {
+        if (field === 'is_default') {
+            // Uncheck all others
+            updatedVariants.forEach((v, i) => {
+                v.is_default = i === index ? (value as boolean) : false;
+            });
+        } else if (field === 'sku' || field === 'price' || field === 'stock' || field === 'image' || field === 'images') {
             updatedVariants[index] = { ...updatedVariants[index], [field]: value };
         } else {
             // It's an attribute
@@ -286,8 +294,11 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             if (productType === 'variant') {
                 productData.price = 0;
                 productData.stock = 0;
-                if (variants.length > 0 && variants[0].image_url) {
-                    productData.image_url = variants[0].image_url;
+                productData.price = 0;
+                productData.stock = 0;
+                const defaultVariant = variants.find(v => v.is_default) || variants[0];
+                if (variants.length > 0 && defaultVariant.image_url) {
+                    productData.image_url = defaultVariant.image_url;
                 }
             }
 
@@ -340,7 +351,8 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                         price: variant.price,
                         stock: variant.stock,
                         image_url: variant.image_url,
-                        images: variant.images
+                        images: variant.images,
+                        is_default: variant.is_default
                     };
 
                     if (variantId) {
@@ -559,6 +571,17 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                                             required
                                                         />
                                                     </div>
+                                                </div>
+                                                <div className="form-control w-fit">
+                                                    <label className="label cursor-pointer gap-2">
+                                                        <span className="label-text text-xs font-bold">Default Variant</span>
+                                                        <input
+                                                            type="checkbox"
+                                                            className="checkbox checkbox-sm checkbox-primary"
+                                                            checked={variant.is_default || false}
+                                                            onChange={(e) => updateVariant(index, 'is_default', e.target.checked)}
+                                                        />
+                                                    </label>
                                                 </div>
 
                                                 {/* Variant Images */}
