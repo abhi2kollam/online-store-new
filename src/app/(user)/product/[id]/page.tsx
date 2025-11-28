@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import TrendingProductCard from '@/components/TrendingProductCard';
+import TrendingSection from '@/components/TrendingSection';
 import ProductDetails from '@/components/ProductDetails';
 import { createClient } from '@/utils/supabase/server';
 
@@ -31,11 +31,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
     const images = Array.from(new Set([product.image_url, ...(product.images || [])])).filter(Boolean) as string[];
 
     // Fetch related products (simple implementation for now)
-    const { data: relatedProducts } = await supabase
+    const { data: relatedProductsData } = await supabase
         .from('products')
         .select('*')
         .neq('id', id)
-        .limit(4);
+        .limit(8);
+
+    // Map to Product type
+    const relatedProducts = relatedProductsData?.map(p => ({
+        ...p,
+        id: p.id.toString(),
+        image_url: p.image_url,
+        category: 'Uncategorized', // Default or fetch if needed
+        images: p.images || [],
+        description: p.description || '',
+        stock: p.stock || 0
+    })) || [];
 
     return (
         <div className="mt-8">
@@ -43,12 +54,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             {/* Explore More Section */}
             <div className="my-8">
-                <h2 className="text-3xl font-bold mb-8">Explore More</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {relatedProducts?.map((relatedProduct) => (
-                        <TrendingProductCard key={relatedProduct.id} product={relatedProduct} />
-                    ))}
-                </div>
+                {relatedProducts.length > 0 && (
+                    <TrendingSection title="Explore More" products={relatedProducts} />
+                )}
             </div>
         </div>
     );

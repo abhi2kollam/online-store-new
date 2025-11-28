@@ -108,7 +108,7 @@ const Navbar = () => {
 
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="fixed inset-0 z-[100] bg-black/50 md:hidden" onClick={() => setIsMobileMenuOpen(false)}>
+                <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setIsMobileMenuOpen(false)}>
                     <div
                         className="fixed left-0 top-0 h-full w-64 bg-base-100 p-4 shadow-lg transition-transform duration-300 ease-in-out"
                         onClick={e => e.stopPropagation()}
