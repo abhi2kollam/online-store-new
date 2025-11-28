@@ -37,7 +37,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
     const [attributes, setAttributes] = useState<Attribute[]>([]);
 
     // Product Type State
-    const [productType, setProductType] = useState<'simple' | 'variant'>('simple');
+    const [productType, setProductType] = useState<'simple' | 'variant'>(initialData?.product_type || 'simple');
 
     // Variant State
     const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]); // ["Color", "Size"]
@@ -55,16 +55,82 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
         }
     );
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const { data: catData } = await supabase.from('categories').select('id, name');
-            if (catData) setCategories(catData);
+    console.log('ProductForm rendered');
 
-            const { data: attrData } = await supabase.from('attributes').select('*');
-            if (attrData) setAttributes(attrData);
+    useEffect(() => {
+        console.log('ProductForm: useEffect (fetchData) called');
+        const fetchData = async () => {
+            console.log('ProductForm: fetching categories and attributes...');
+            const { data: catData, error: catError } = await supabase.from('categories').select('id, name');
+            if (catError) console.error('Error fetching categories:', catError);
+            if (catData) {
+                console.log('Categories fetched:', catData.length);
+                setCategories(catData);
+            }
+
+            const { data: attrData, error: attrError } = await supabase.from('attributes').select('*');
+            if (attrError) console.error('Error fetching attributes:', attrError);
+            if (attrData) {
+                console.log('Attributes fetched:', attrData.length);
+                setAttributes(attrData);
+            }
         };
         fetchData();
-    }, [supabase]);
+    }, []);
+
+    // Fetch variants in edit mode
+    useEffect(() => {
+        if (!isEdit || !initialData?.id || productType !== 'variant') return;
+
+        const fetchVariants = async () => {
+            const { data: variantsData, error } = await supabase
+                .from('product_variants')
+                .select(`
+                    id, sku, price, stock, image_url, images,
+                    product_variant_attributes (
+                        value,
+                        attributes (name)
+                    )
+                `)
+                .eq('product_id', parseInt(initialData.id));
+
+            if (error) {
+                console.error('Error fetching variants:', error);
+                return;
+            }
+
+            if (variantsData) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const formattedVariants: Variant[] = variantsData.map((v: any) => {
+                    const attributes: Record<string, string> = {};
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    v.product_variant_attributes.forEach((pva: any) => {
+                        attributes[pva.attributes.name] = pva.value;
+                    });
+                    return {
+                        id: v.id,
+                        sku: v.sku,
+                        price: v.price,
+                        stock: v.stock,
+                        image_url: v.image_url,
+                        images: v.images,
+                        attributes
+                    };
+                });
+
+                setVariants(formattedVariants);
+
+                // Extract unique attributes
+                const attrs = new Set<string>();
+                formattedVariants.forEach(v => {
+                    Object.keys(v.attributes).forEach(k => attrs.add(k));
+                });
+                setSelectedAttributes(Array.from(attrs));
+            }
+        };
+
+        fetchVariants();
+    }, [isEdit, initialData?.id, productType, supabase]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -217,42 +283,84 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 productData.category_id = selectedCategory.id;
             }
 
-            // Insert Product
-            const { data: newProduct, error } = await supabase
-                .from('products')
-                .insert([productData])
-                .select()
-                .single();
+            let productId = initialData?.id;
 
-            if (error) throw error;
+            if (isEdit && productId) {
+                // Update Product
+                const { error } = await supabase
+                    .from('products')
+                    .update(productData)
+                    .eq('id', productId);
+                if (error) throw error;
+            } else {
+                // Insert Product
+                const { data: newProduct, error } = await supabase
+                    .from('products')
+                    .insert([productData])
+                    .select()
+                    .single();
+                if (error) throw error;
+                productId = newProduct.id;
+            }
 
-            // Insert Variants
-            if (productType === 'variant' && variants.length > 0) {
+            // Handle Variants
+            if (productType === 'variant') {
+                // 1. Delete removed variants (only if editing)
+                if (isEdit && productId) {
+                    const currentVariantIds = variants.filter(v => v.id).map(v => v.id);
+                    let query = supabase.from('product_variants').delete().eq('product_id', productId);
+
+                    if (currentVariantIds.length > 0) {
+                        query = query.not('id', 'in', `(${currentVariantIds.join(',')})`);
+                    }
+
+                    const { error: deleteError } = await query;
+                    if (deleteError) throw deleteError;
+                }
+
+                // 2. Upsert/Insert variants
                 for (const variant of variants) {
-                    const { data: variantData, error: variantError } = await supabase
-                        .from('product_variants')
-                        .insert({
-                            product_id: newProduct.id,
-                            sku: variant.sku,
-                            price: variant.price,
-                            stock: variant.stock,
-                            image_url: variant.image_url,
-                            images: variant.images
-                        })
-                        .select()
-                        .single();
+                    let variantId = variant.id;
+                    const variantDataPayload = {
+                        product_id: productId,
+                        sku: variant.sku,
+                        price: variant.price,
+                        stock: variant.stock,
+                        image_url: variant.image_url,
+                        images: variant.images
+                    };
 
-                    if (variantError) throw variantError;
+                    if (variantId) {
+                        // Update existing variant
+                        const { error: updateVarError } = await supabase
+                            .from('product_variants')
+                            .update(variantDataPayload)
+                            .eq('id', variantId);
+                        if (updateVarError) throw updateVarError;
+                    } else {
+                        // Insert new variant
+                        const { data: newVariant, error: insertVarError } = await supabase
+                            .from('product_variants')
+                            .insert(variantDataPayload)
+                            .select()
+                            .single();
+                        if (insertVarError) throw insertVarError;
+                        variantId = newVariant.id;
+                    }
 
-                    // Insert Variant Attributes
-                    for (const [attrName, attrValue] of Object.entries(variant.attributes)) {
-                        const attribute = attributes.find(a => a.name === attrName);
-                        if (attribute) {
-                            await supabase.from('product_variant_attributes').insert({
-                                variant_id: variantData.id,
-                                attribute_id: attribute.id,
-                                value: attrValue
-                            });
+                    // 3. Handle Attributes (Delete all for this variant and re-insert)
+                    if (variantId) {
+                        await supabase.from('product_variant_attributes').delete().eq('variant_id', variantId);
+
+                        for (const [attrName, attrValue] of Object.entries(variant.attributes)) {
+                            const attribute = attributes.find(a => a.name === attrName);
+                            if (attribute) {
+                                await supabase.from('product_variant_attributes').insert({
+                                    variant_id: variantId,
+                                    attribute_id: attribute.id,
+                                    value: attrValue
+                                });
+                            }
                         }
                     }
                 }
@@ -349,6 +457,8 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 {/* Variant Product Fields */}
                 {productType === 'variant' && (
                     <div className="border p-4 rounded-lg bg-base-200 space-y-4">
+                        <h3 className="font-bold text-lg">Variants</h3>
+
                         <h3 className="font-bold text-lg">Variants</h3>
 
                         {/* Attribute Selector */}
