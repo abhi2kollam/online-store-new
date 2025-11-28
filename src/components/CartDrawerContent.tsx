@@ -4,9 +4,10 @@ import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 import Image from 'next/image';
 import { X, ShoppingBag } from 'lucide-react';
+import QuantitySelector from '@/components/QuantitySelector';
 
 export default function CartDrawerContent() {
-    const { items, total, removeFromCart } = useCart();
+    const { items, total, removeFromCart, updateQuantity } = useCart();
 
     const closeDrawer = () => {
         const checkbox = document.getElementById('cart-drawer') as HTMLInputElement;
@@ -50,9 +51,14 @@ export default function CartDrawerContent() {
                             <div className="flex-1 flex flex-col justify-between">
                                 <div>
                                     <h3 className="font-medium text-sm line-clamp-2">{item.name}</h3>
-                                    <p className="text-xs text-base-content/70 mt-1">
-                                        Qty: {item.quantity}
-                                    </p>
+                                    <div className="mt-2">
+                                        <QuantitySelector
+                                            quantity={item.quantity}
+                                            onIncrease={() => updateQuantity(item.id, item.variantId, item.quantity + 1)}
+                                            onDecrease={() => updateQuantity(item.id, item.variantId, item.quantity - 1)}
+                                            size="sm"
+                                        />
+                                    </div>
                                 </div>
                                 <div className="flex justify-between items-end">
                                     <span className="font-bold text-primary text-sm">

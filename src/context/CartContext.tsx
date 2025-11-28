@@ -13,7 +13,8 @@ export interface CartItem extends Product {
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: Product, variantId?: number) => Promise<void>;
+    addToCart: (product: Product, variantId?: number, quantity?: number) => Promise<void>;
+    updateQuantity: (productId: string, variantId: number | undefined, quantity: number) => Promise<void>;
     removeFromCart: (productId: string, variantId?: number) => Promise<void>;
     clearCart: () => Promise<void>;
     total: number;
@@ -125,12 +126,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }, [items, loading, user]);
 
-    const addToCart = async (product: Product, variantId?: number) => {
+    const addToCart = async (product: Product, variantId?: number, quantity: number = 1) => {
         // Normalize variantId to null if undefined for consistent comparison
         const targetVariantId = variantId ?? null;
 
         // Optimistic update
-        const newItem = { ...product, quantity: 1, variantId: targetVariantId ?? undefined };
+        const newItem = { ...product, quantity: quantity, variantId: targetVariantId ?? undefined };
 
         setItems((prevItems) => {
             // Find existing item matching product ID and variant ID (handling nulls)
@@ -140,7 +141,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
             if (existingItemIndex > -1) {
                 const newItems = [...prevItems];
-                newItems[existingItemIndex].quantity += 1;
+                newItems[existingItemIndex].quantity += quantity;
                 return newItems;
             }
             return [...prevItems, newItem];
@@ -149,7 +150,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (user) {
             // Sync with Supabase
             const currentItem = items.find(i => i.id === product.id && (i.variantId ?? null) === targetVariantId);
-            const newQuantity = currentItem ? currentItem.quantity + 1 : 1;
+            const newQuantity = currentItem ? currentItem.quantity + quantity : quantity;
 
             const { error } = await supabase
                 .from('cart_items')
@@ -162,6 +163,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
             if (error) {
                 console.error('Error adding to cart in Supabase:', error);
+            }
+        }
+    };
+
+    const updateQuantity = async (productId: string, variantId: number | undefined, quantity: number) => {
+        if (quantity < 1) return;
+        const targetVariantId = variantId ?? null;
+
+        setItems((prevItems) =>
+            prevItems.map((item) =>
+                item.id === productId && (item.variantId ?? null) === targetVariantId
+                    ? { ...item, quantity }
+                    : item
+            )
+        );
+
+        if (user) {
+            const { error } = await supabase
+                .from('cart_items')
+                .update({ quantity })
+                .eq('user_id', user.id)
+                .eq('product_id', parseInt(productId))
+                .is('variant_id', targetVariantId === null ? null : targetVariantId); // Handle null explicitly
+
+            // Note: .is() is better for null checks, but .eq() might work depending on library version.
+            // For safety with variant_id which can be null:
+            let query = supabase.from('cart_items').update({ quantity }).eq('user_id', user.id).eq('product_id', parseInt(productId));
+            if (targetVariantId !== null) {
+                query = query.eq('variant_id', targetVariantId);
+            } else {
+                query = query.is('variant_id', null);
+            }
+            const { error: updateError } = await query;
+
+            if (updateError) {
+                console.error('Error updating quantity in Supabase:', updateError);
             }
         }
     };
@@ -213,7 +250,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     return (
-        <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart, total, loading }}>
+        <CartContext.Provider value={{ items, addToCart, updateQuantity, removeFromCart, clearCart, total, loading }}>
             {children}
         </CartContext.Provider>
     );

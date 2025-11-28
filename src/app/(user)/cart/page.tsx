@@ -3,9 +3,10 @@
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 import Image from 'next/image';
+import QuantitySelector from '@/components/QuantitySelector';
 
 export default function CartPage() {
-    const { items, removeFromCart, clearCart, total } = useCart();
+    const { items, removeFromCart, clearCart, total, updateQuantity } = useCart();
 
     if (items.length === 0) {
         return (
@@ -36,7 +37,13 @@ export default function CartPage() {
                         <div className="grow">
                             <h3 className="font-bold text-lg">{item.name}</h3>
                             <p className="text-sm text-base-content/70">{item.category}</p>
-                            <p className="font-semibold">${item.price.toFixed(2)} x {item.quantity}</p>
+                            <div className="mt-2">
+                                <QuantitySelector
+                                    quantity={item.quantity}
+                                    onIncrease={() => updateQuantity(item.id, item.variantId, item.quantity + 1)}
+                                    onDecrease={() => updateQuantity(item.id, item.variantId, item.quantity - 1)}
+                                />
+                            </div>
                         </div>
                         <div className="text-right">
                             <p className="font-bold text-xl">${(item.price * item.quantity).toFixed(2)}</p>

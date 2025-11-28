@@ -5,6 +5,7 @@ import { Product } from '@/types';
 import AddToCartButton from '@/components/AddToCartButton';
 import { createClient } from '@/utils/supabase/client';
 import ImageGallery from '@/components/ImageGallery';
+import QuantitySelector from '@/components/QuantitySelector';
 
 interface Variant {
     id: number;
@@ -28,6 +29,7 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
     const [currentVariant, setCurrentVariant] = useState<Variant | null>(null);
     const [availableAttributes, setAvailableAttributes] = useState<Record<string, string[]>>({});
     const [loadingVariants, setLoadingVariants] = useState(false);
+    const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
         const fetchVariants = async () => {
@@ -174,17 +176,30 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
 
                 <div className="divider"></div>
 
-                <div className="flex gap-4">
-                    <AddToCartButton
-                        product={{
-                            ...product,
-                            price: displayPrice,
-                            id: product.id // Ensure ID is passed
-                        }}
-                        variantId={currentVariant?.id}
-                        disabled={isOutOfStock || (product.product_type === 'variant' && !currentVariant)}
-                    />
-                    <button className="btn btn-outline btn-accent">Add to Wishlist</button>
+                <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-4">
+                        <span className="font-semibold">Quantity:</span>
+                        <QuantitySelector
+                            quantity={quantity}
+                            onIncrease={() => setQuantity(q => q + 1)}
+                            onDecrease={() => setQuantity(q => Math.max(1, q - 1))}
+                            max={isOutOfStock ? 0 : displayStock}
+                        />
+                    </div>
+
+                    <div className="flex gap-4">
+                        <AddToCartButton
+                            product={{
+                                ...product,
+                                price: displayPrice,
+                                id: product.id // Ensure ID is passed
+                            }}
+                            variantId={currentVariant?.id}
+                            disabled={isOutOfStock || (product.product_type === 'variant' && !currentVariant)}
+                            quantity={quantity}
+                        />
+                        <button className="btn btn-outline btn-accent">Add to Wishlist</button>
+                    </div>
                 </div>
 
                 <div className={`mt-4 ${isOutOfStock ? 'text-error' : 'text-info'}`}>
