@@ -118,9 +118,11 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
     const isOutOfStock = displayStock <= 0;
 
     // Determine images to display
-    const displayImages = currentVariant?.images && currentVariant.images.length > 0
-        ? currentVariant.images
-        : (currentVariant?.image_url ? [currentVariant.image_url] : initialImages);
+    const variantImages = currentVariant
+        ? Array.from(new Set([currentVariant.image_url, ...(currentVariant.images || [])])).filter(Boolean) as string[]
+        : [];
+
+    const displayImages = variantImages.length > 0 ? variantImages : initialImages;
 
     return (
         <div className="grid md:grid-cols-2 gap-8">

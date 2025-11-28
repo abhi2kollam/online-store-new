@@ -27,8 +27,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
         notFound();
     }
 
-    // Fallback if images array is empty
-    const images = product.images && product.images.length > 0 ? product.images : [product.image_url];
+    // Ensure main image is first and remove duplicates
+    const images = Array.from(new Set([product.image_url, ...(product.images || [])])).filter(Boolean) as string[];
 
     // Fetch related products (simple implementation for now)
     const { data: relatedProducts } = await supabase
