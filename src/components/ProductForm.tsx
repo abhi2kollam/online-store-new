@@ -282,6 +282,15 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 product_type: productType,
             };
 
+            // If variable product, ignore price/stock and set main image from first variant
+            if (productType === 'variant') {
+                productData.price = 0;
+                productData.stock = 0;
+                if (variants.length > 0 && variants[0].image_url) {
+                    productData.image_url = variants[0].image_url;
+                }
+            }
+
             const selectedCategory = categories.find(c => c.name === formData.category);
             if (selectedCategory) {
                 productData.category_id = selectedCategory.id;
