@@ -1,20 +1,36 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { createClient } from '@/utils/supabase/server';
+import AdminProductRow from '@/components/AdminProductRow';
 
 export const revalidate = 0;
 
-export default async function AdminProductsPage() {
+export default async function AdminProductsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
     const supabase = await createClient();
-    const { data: products, error } = await supabase
+    const { page: pageParam } = await searchParams;
+    const page = parseInt(pageParam || '1');
+    const ITEMS_PER_PAGE = 10;
+    const from = (page - 1) * ITEMS_PER_PAGE;
+    const to = from + ITEMS_PER_PAGE - 1;
+
+    const { data: products, count, error } = await supabase
         .from('products')
-        .select('*, categories(name)')
-        .order('created_at', { ascending: false });
+        .select(`
+            *, 
+            categories(name), 
+            product_variants(
+                id, sku, price, stock, image_url,
+                product_variant_attributes(value)
+            )
+        `, { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
     if (error) {
         console.error('Error fetching products:', error);
         return <div>Error loading products</div>;
     }
+
+    const totalPages = count ? Math.ceil(count / ITEMS_PER_PAGE) : 0;
 
     return (
         <div className="space-y-6">
@@ -39,36 +55,8 @@ export default async function AdminProductsPage() {
                     </thead>
                     <tbody>
                         {products?.map((product) => (
-                            <tr key={product.id}>
-                                <td>
-                                    <div className="avatar">
-                                        <div className="mask mask-squircle w-12 h-12">
-                                            {product.image_url ? (
-                                                <Image
-                                                    src={product.image_url}
-                                                    alt={product.name}
-                                                    width={48}
-                                                    height={48}
-                                                />
-                                            ) : (
-                                                <div className="w-12 h-12 bg-base-300 flex items-center justify-center text-xs">No Img</div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="font-bold">{product.name}</div>
-                                </td>
-                                <td>{product.categories?.name || 'Uncategorized'}</td>
-                                <td>${product.price.toFixed(2)}</td>
-                                <td>{product.stock}</td>
-                                <td>
-                                    <Link href={`/admin/products/${product.id}`} className="btn btn-sm btn-ghost">
-                                        Edit
-                                    </Link>
-                                    <button className="btn btn-sm btn-ghost text-error">Delete</button>
-                                </td>
-                            </tr>
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            <AdminProductRow key={product.id} product={product as any} />
                         ))}
                         {products?.length === 0 && (
                             <tr>
@@ -78,6 +66,23 @@ export default async function AdminProductsPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex justify-center mt-4">
+                    <div className="join">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                            <Link
+                                key={p}
+                                href={`/admin/products?page=${p}`}
+                                className={`join-item btn ${page === p ? 'btn-active' : ''}`}
+                            >
+                                {p}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
