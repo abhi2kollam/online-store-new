@@ -418,6 +418,10 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                             {categories.map((cat) => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
                         </select>
                     </div>
+                    <div className="form-control col-span-2">
+                        <label className="label w-full"><span className="label-text ">Description</span></label>
+                        <textarea name="description" value={formData.description} onChange={handleChange} className="textarea textarea-bordered h-24 w-full" required></textarea>
+                    </div>
                     <div className="form-control">
                         <label className="label"><span className="label-text font-semibold">Product Type</span></label>
                         <select
@@ -484,8 +488,6 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     <div className="border p-4 rounded-lg bg-base-200 space-y-4">
                         <h3 className="font-bold text-lg">Variants</h3>
 
-                        <h3 className="font-bold text-lg">Variants</h3>
-
                         {loadingVariants ? (
                             <div className="space-y-4 animate-pulse">
                                 <div className="h-10 bg-base-300 rounded w-1/3 mb-4"></div>
@@ -509,7 +511,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                     {/* Selected Attributes */}
                                     <div className="flex flex-wrap gap-2 mb-1">
                                         {selectedAttributes.map(attr => (
-                                            <div key={attr} className="badge badge-primary gap-2 p-3">
+                                            <div key={attr} className="badge badge-neutral gap-2 p-3">
                                                 {attr}
                                                 <button type="button" onClick={() => handleRemoveAttribute(attr)} className="btn btn-xs btn-circle btn-ghost">✕</button>
                                             </div>
@@ -522,8 +524,6 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                 {/* Variant List */}
                                 {selectedAttributes.length > 0 && (
                                     <div className="space-y-4">
-                                        <button type="button" onClick={addVariant} className="btn btn-accent btn-sm">+ Add Variant</button>
-
                                         {variants.map((variant, index) => (
                                             <div key={index} className="card bg-base-100 shadow-sm p-4 border">
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
@@ -577,7 +577,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                                         <span className="label-text text-xs font-bold">Default Variant</span>
                                                         <input
                                                             type="checkbox"
-                                                            className="checkbox checkbox-sm checkbox-primary"
+                                                            className="checkbox checkbox-sm checkbox-neutral"
                                                             checked={variant.is_default || false}
                                                             onChange={(e) => updateVariant(index, 'is_default', e.target.checked)}
                                                         />
@@ -623,6 +623,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                                 </div>
                                             </div>
                                         ))}
+                                        <button type="button" onClick={addVariant} className="btn btn-accent btn-sm">+ Add Variant</button>
                                     </div>
                                 )}
                             </>
@@ -648,11 +649,6 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     </div>}
                 </div>
 
-                {/* Description */}
-                <div className="form-control">
-                    <label className="label w-full"><span className="label-text ">Description</span></label>
-                    <textarea name="description" value={formData.description} onChange={handleChange} className="textarea textarea-bordered h-24 w-full" required></textarea>
-                </div>
 
                 <div className="flex justify-end gap-4">
                     <button type="button" className="btn btn-ghost" onClick={() => router.back()} disabled={uploading}>Cancel</button>

@@ -46,7 +46,7 @@ export default function ProductsMediaPage() {
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Product Media</h1>
                 <div className="form-control">
-                    <label className="btn btn-primary gap-2 cursor-pointer">
+                    <label className="btn btn-neutral gap-2 cursor-pointer">
                         <Upload size={20} />
                         {uploading ? 'Uploading...' : 'Upload Images'}
                         <input
