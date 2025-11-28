@@ -18,7 +18,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
             *, 
             categories(name), 
             product_variants(
-                id, sku, price, stock, image_url,
+                id, sku, price, stock, image_url,is_default,    
                 product_variant_attributes(value)
             )
         `, { count: 'exact' })

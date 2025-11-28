@@ -82,6 +82,39 @@ export async function POST(request: Request) {
 
             if (itemsError) throw itemsError;
 
+            // 3. Reduce Stock
+            for (const item of cartItems) {
+                if (item.variant_id) {
+                    // Reduce variant stock
+                    const { data: variant } = await supabaseAdmin
+                        .from('product_variants')
+                        .select('stock')
+                        .eq('id', item.variant_id)
+                        .single();
+
+                    if (variant) {
+                        await supabaseAdmin
+                            .from('product_variants')
+                            .update({ stock: Math.max(0, variant.stock - item.quantity) })
+                            .eq('id', item.variant_id);
+                    }
+                } else {
+                    // Reduce product stock
+                    const { data: product } = await supabaseAdmin
+                        .from('products')
+                        .select('stock')
+                        .eq('id', item.product_id)
+                        .single();
+
+                    if (product) {
+                        await supabaseAdmin
+                            .from('products')
+                            .update({ stock: Math.max(0, product.stock - item.quantity) })
+                            .eq('id', item.product_id);
+                    }
+                }
+            }
+
             // 3. Clear Cart
             await supabaseAdmin
                 .from('cart_items')

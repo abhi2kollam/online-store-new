@@ -290,15 +290,19 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 product_type: productType,
             };
 
-            // If variable product, ignore price/stock and set main image from first variant
+            // If variable product, set price/stock and main image from default variant
             if (productType === 'variant') {
-                productData.price = 0;
-                productData.stock = 0;
-                productData.price = 0;
-                productData.stock = 0;
                 const defaultVariant = variants.find(v => v.is_default) || variants[0];
-                if (variants.length > 0 && defaultVariant.image_url) {
-                    productData.image_url = defaultVariant.image_url;
+
+                if (defaultVariant) {
+                    productData.price = defaultVariant.price;
+                    productData.stock = defaultVariant.stock;
+                    if (defaultVariant.image_url) {
+                        productData.image_url = defaultVariant.image_url;
+                    }
+                } else {
+                    productData.price = 0;
+                    productData.stock = 0;
                 }
             }
 
@@ -525,7 +529,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                 {selectedAttributes.length > 0 && (
                                     <div className="space-y-4">
                                         {variants.map((variant, index) => (
-                                            <div key={index} className="card bg-base-100 shadow-sm p-4 border">
+                                            <div key={index} className={`card bg-base-100 shadow-sm p-4 border ${variant.is_default ? 'border-primary border-2' : ''}`}>
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
                                                     {selectedAttributes.map(attr => (
                                                         <div key={attr} className="form-control">

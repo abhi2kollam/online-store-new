@@ -98,7 +98,10 @@ export default function AdminProductRow({ product }: AdminProductRowProps) {
                                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                     {product.product_variants?.map((variant: any) => (
                                         <tr key={variant.id}>
-                                            <td className="font-mono text-xs">{variant.sku}</td>
+                                            <td className="font-mono text-xs">
+                                                {variant.sku}
+                                                {variant.is_default && <span className="badge badge-xs badge-accent ml-2">Default</span>}
+                                            </td>
                                             <td>
                                                 {/* Fetching attributes might require joining in the parent query or we can just show what we have if we fetched it */}
                                                 {/* For now, we might not have attribute names if we didn't fetch deep enough. 
