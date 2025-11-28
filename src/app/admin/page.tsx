@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { Order } from '@/types';
 
 export default async function AdminDashboard() {
     const supabase = await createClient();
@@ -9,7 +10,7 @@ export default async function AdminDashboard() {
     // Orders not implemented yet
     const totalRevenue = 0;
     const totalOrders = 0;
-    const orders: any[] = [];
+    const orders: Order[] = [];
 
     return (
         <div className="space-y-8">

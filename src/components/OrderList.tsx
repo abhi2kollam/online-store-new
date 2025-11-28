@@ -1,7 +1,7 @@
-import { MockOrder } from '@/services/mockData';
+import { Order } from '@/types';
 
 interface OrderListProps {
-    orders: MockOrder[];
+    orders: Order[];
 }
 
 export default function OrderList({ orders }: OrderListProps) {
@@ -28,7 +28,7 @@ export default function OrderList({ orders }: OrderListProps) {
                             <td>{order.date}</td>
                             <td>
                                 <div className={`badge ${order.status === 'Delivered' ? 'badge-success' :
-                                        order.status === 'Processing' ? 'badge-warning' : 'badge-info'
+                                    order.status === 'Processing' ? 'badge-warning' : 'badge-info'
                                     }`}>
                                     {order.status}
                                 </div>

@@ -38,7 +38,7 @@ export default async function AdminProductsPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {products?.map((product: any) => (
+                        {products?.map((product) => (
                             <tr key={product.id}>
                                 <td>
                                     <div className="avatar">

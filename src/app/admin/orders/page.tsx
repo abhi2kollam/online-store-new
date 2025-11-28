@@ -1,6 +1,8 @@
+import { Order } from '@/types';
+
 export default async function AdminOrdersPage() {
     // Orders not implemented yet
-    const orders: any[] = [];
+    const orders: Order[] = [];
 
     return (
         <div className="space-y-6">

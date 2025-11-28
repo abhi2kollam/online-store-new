@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
+import { Profile } from '@/types';
+
 interface UserRowProps {
-    user: any;
+    user: Profile;
 }
 
 export default function UserRow({ user }: UserRowProps) {
@@ -47,7 +49,7 @@ export default function UserRow({ user }: UserRowProps) {
                     {status}
                 </div>
             </td>
-            <td>{new Date(user.created_at).toLocaleDateString()}</td>
+            <td>{new Date(user.created_at || Date.now()).toLocaleDateString()}</td>
             <td>
                 <button
                     onClick={toggleStatus}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Product } from '@/types'; // We'll update this type later
+import { Product } from '@/types';
 import AddToCartButton from '@/components/AddToCartButton';
 import { createClient } from '@/utils/supabase/client';
 
@@ -14,7 +14,7 @@ interface Variant {
 }
 
 interface ProductDetailsProps {
-    product: any; // Using any for now to handle Supabase data structure
+    product: Product;
 }
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
@@ -45,8 +45,9 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             }
 
             // Transform data
-            const formattedVariants: Variant[] = variantsData.map((v: any) => {
+            const formattedVariants: Variant[] = variantsData.map((v) => {
                 const attributes: Record<string, string> = {};
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 v.product_variant_attributes.forEach((pva: any) => {
                     attributes[pva.attributes.name] = pva.value;
                 });
@@ -85,7 +86,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
         };
 
         fetchVariants();
-    }, [product.id, product.product_type]);
+    }, [product.id, product.product_type, supabase]);
 
     const handleAttributeSelect = (key: string, value: string) => {
         const newAttributes = { ...selectedAttributes, [key]: value };

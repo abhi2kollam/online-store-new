@@ -7,7 +7,7 @@ import { createClient } from '@/utils/supabase/client';
 export default function CategoryFilter() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [isPending, startTransition] = useTransition();
+    const [, startTransition] = useTransition();
     const [categories, setCategories] = useState<string[]>(['All']);
     const supabase = createClient();
 
@@ -19,7 +19,7 @@ export default function CategoryFilter() {
             }
         };
         fetchCategories();
-    }, []);
+    }, [supabase]);
 
     const activeCategory = searchParams.get('category') || 'All';
 

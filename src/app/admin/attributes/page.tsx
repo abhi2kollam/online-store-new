@@ -1,19 +1,53 @@
+'use client';
+
 import Link from 'next/link';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/client';
+import { useEffect, useState } from 'react';
 
-export const revalidate = 0;
+interface Attribute {
+    id: number;
+    name: string;
+    type: string;
+    created_at: string;
+}
 
-export default async function AdminAttributesPage() {
-    const supabase = await createClient();
-    const { data: attributes, error } = await supabase
-        .from('attributes')
-        .select('*')
-        .order('created_at', { ascending: false });
+export default function AdminAttributesPage() {
+    const supabase = createClient();
+    const [attributes, setAttributes] = useState<Attribute[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    if (error) {
-        console.error('Error fetching attributes:', error);
-        return <div>Error loading attributes</div>;
-    }
+    useEffect(() => {
+        const fetchAttributes = async () => {
+            const { data, error } = await supabase
+                .from('attributes')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching attributes:', error);
+            } else {
+                setAttributes(data || []);
+            }
+            setLoading(false);
+        };
+
+        fetchAttributes();
+    }, [supabase]);
+
+    const handleDelete = async (id: number) => {
+        if (!confirm('Are you sure you want to delete this attribute?')) return;
+
+        try {
+            const { error } = await supabase.from('attributes').delete().eq('id', id);
+            if (error) throw error;
+            setAttributes(attributes.filter((attr) => attr.id !== id));
+        } catch (error: unknown) {
+            console.error('Error deleting attribute:', error);
+            alert('Error deleting attribute');
+        }
+    };
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="space-y-6">
@@ -34,18 +68,23 @@ export default async function AdminAttributesPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {attributes?.map((attribute: any) => (
+                        {attributes.map((attribute) => (
                             <tr key={attribute.id}>
                                 <td className="font-bold">{attribute.name}</td>
                                 <td>
                                     <div className="badge badge-ghost">{attribute.type}</div>
                                 </td>
                                 <td>
-                                    <button className="btn btn-sm btn-ghost text-error">Delete</button>
+                                    <button
+                                        onClick={() => handleDelete(attribute.id)}
+                                        className="btn btn-sm btn-ghost text-error"
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))}
-                        {attributes?.length === 0 && (
+                        {attributes.length === 0 && (
                             <tr>
                                 <td colSpan={3} className="text-center py-4">No attributes found</td>
                             </tr>

@@ -30,9 +30,10 @@ export default function NewAttributePage() {
 
             router.push('/admin/attributes');
             router.refresh();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error creating attribute:', err);
-            setError(err.message || 'Failed to create attribute');
+            const message = err instanceof Error ? err.message : 'Failed to create attribute';
+            setError(message);
         } finally {
             setLoading(false);
         }

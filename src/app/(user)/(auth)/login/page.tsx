@@ -7,7 +7,7 @@ export default function LoginPage() {
             <AuthForm type="login" />
             <div className="mt-4">
                 <p>
-                    Don't have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link href="/signup" className="link link-primary">
                         Sign up
                     </Link>

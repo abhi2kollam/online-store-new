@@ -25,8 +25,8 @@ const Footer = () => {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4 uppercase text-sm tracking-wider">Collections</h4>
                         <ul className="space-y-3 text-sm text-gray-600">
-                            <li><Link href="/shop?category=Men" className="hover:text-black transition-colors">Men's Wear</Link></li>
-                            <li><Link href="/shop?category=Women" className="hover:text-black transition-colors">Women's Wear</Link></li>
+                            <li><Link href="/shop?category=Men" className="hover:text-black transition-colors">Men&apos;s Wear</Link></li>
+                            <li><Link href="/shop?category=Women" className="hover:text-black transition-colors">Women&apos;s Wear</Link></li>
                             <li><Link href="/" className="hover:text-black transition-colors">Trending collections</Link></li>
                             <li><Link href="/" className="hover:text-black transition-colors">Best sellers</Link></li>
                         </ul>

@@ -43,8 +43,9 @@ export default function AuthForm({ type }: AuthFormProps) {
                 if (error) throw error;
                 router.push('/');
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Authentication failed';
+            setError(message);
         } finally {
             setLoading(false);
         }

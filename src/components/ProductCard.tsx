@@ -22,7 +22,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <Link href={`/product/${product.id}`} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 cursor-pointer block group">
             <figure className="relative h-64 overflow-hidden">
                 <Image
-                    src={product.image}
+                    src={product.image_url}
                     alt={product.name}
                     width={400}
                     height={300}

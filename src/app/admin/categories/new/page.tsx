@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import MediaGallery from '@/components/MediaGallery';
+import Image from 'next/image';
 
 export default function NewCategoryPage() {
     const supabase = createClient();
@@ -29,9 +30,10 @@ export default function NewCategoryPage() {
 
             alert('Category created successfully!');
             router.push('/admin/categories');
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Error creating category:', error);
-            alert('Error creating category. Please try again.');
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            alert(`Error creating category: ${message}`);
         } finally {
             setLoading(false);
         }
@@ -58,9 +60,10 @@ export default function NewCategoryPage() {
 
             setImage(publicUrl);
             setRefreshTrigger(prev => prev + 1);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error uploading image:', error);
-            alert(`Error uploading image: ${error.message}`);
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            alert(`Error uploading image: ${message}`);
         } finally {
             setUploading(false);
         }
@@ -92,7 +95,7 @@ export default function NewCategoryPage() {
                     <div className="flex flex-col gap-4">
                         {image && (
                             <div className="relative w-full h-48 rounded-lg overflow-hidden border">
-                                <img src={image} alt="Category preview" className="w-full h-full object-cover" />
+                                <Image src={image} alt="Category preview" fill className="object-cover" />
                                 <button
                                     type="button"
                                     className="absolute top-2 right-2 btn btn-circle btn-sm btn-error"

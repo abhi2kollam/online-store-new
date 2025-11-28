@@ -30,9 +30,10 @@ export default function ProductsMediaPage() {
 
             setRefreshTrigger(prev => prev + 1);
             alert(`${files.length} image(s) uploaded successfully!`);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error uploading images:', error);
-            alert(`Error uploading images: ${error.message}`);
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            alert(`Error uploading images: ${message}`);
         } finally {
             setUploading(false);
             // Reset input

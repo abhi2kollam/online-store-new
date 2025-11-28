@@ -2,6 +2,7 @@
 
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
+import Image from 'next/image';
 import { X, ShoppingBag } from 'lucide-react';
 
 export default function CartDrawerContent() {
@@ -39,10 +40,11 @@ export default function CartDrawerContent() {
                     items.map((item) => (
                         <div key={`${item.id}-${item.variantId}`} className="flex gap-4 p-3 bg-base-200/50 rounded-lg group relative">
                             <div className="w-16 h-16 relative rounded-md overflow-hidden bg-base-300 shrink-0">
-                                <img
-                                    src={item.image}
+                                <Image
+                                    src={item.image || item.image_url}
                                     alt={item.name}
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    className="object-cover"
                                 />
                             </div>
                             <div className="flex-1 flex flex-col justify-between">

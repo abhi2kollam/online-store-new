@@ -25,15 +25,15 @@ export default function CartPage() {
             <div className="space-y-4">
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-4 bg-base-100 p-4 rounded-lg shadow">
-                        <div className="relative h-24 w-24 flex-shrink-0">
+                        <div className="relative h-24 w-24 shrink-0">
                             <Image
-                                src={item.image}
+                                src={item.image || item.image_url}
                                 alt={item.name}
                                 fill
                                 className="object-cover rounded"
                             />
                         </div>
-                        <div className="flex-grow">
+                        <div className="grow">
                             <h3 className="font-bold text-lg">{item.name}</h3>
                             <p className="text-sm text-base-content/70">{item.category}</p>
                             <p className="font-semibold">${item.price.toFixed(2)} x {item.quantity}</p>

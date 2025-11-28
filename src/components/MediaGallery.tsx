@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { Trash2, Copy, Check } from 'lucide-react';
+import Image from 'next/image';
 
 interface MediaGalleryProps {
     onSelect?: (url: string | string[]) => void;
@@ -39,6 +40,7 @@ export default function MediaGallery({ onSelect, selectable = false, allowMultip
 
     useEffect(() => {
         fetchImages();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshTrigger]);
 
     const handleImageClick = (url: string) => {
@@ -74,9 +76,10 @@ export default function MediaGallery({ onSelect, selectable = false, allowMultip
             if (error) throw error;
 
             setImages(images.filter(img => img.name !== fileName));
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error deleting image:', error);
-            alert(`Error deleting image: ${error.message}`);
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            alert(`Error deleting image: ${message}`);
         }
     };
 
@@ -125,8 +128,8 @@ export default function MediaGallery({ onSelect, selectable = false, allowMultip
                             className={`card bg-base-100 shadow-sm border group relative cursor-pointer transition-all ${isSelected ? 'ring-4 ring-primary' : 'hover:ring-2 hover:ring-primary'}`}
                             onClick={() => handleImageClick(img.url)}
                         >
-                            <figure className="aspect-square bg-base-200">
-                                <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                            <figure className="aspect-square bg-base-200 relative">
+                                <Image src={img.url} alt={img.name} fill className="object-cover" />
                             </figure>
 
                             {/* Overlay Actions */}

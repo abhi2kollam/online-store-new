@@ -31,7 +31,7 @@ export default async function AdminUsersPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {users?.map((user: any) => (
+                        {users?.map((user) => (
                             <UserRow key={user.id} user={user} />
                         ))}
                         {users?.length === 0 && (

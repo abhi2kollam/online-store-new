@@ -7,6 +7,8 @@ export interface Product {
     images: string[];
     description: string;
     stock: number;
+    product_type?: 'simple' | 'variant';
+    categories?: { name: string };
 }
 
 export interface Order {
@@ -30,4 +32,25 @@ export interface Category {
     name: string;
     count: number;
     image: string;
+}
+
+export interface Profile {
+    id: string;
+    full_name: string;
+    phone: string;
+    role: string;
+    status?: string;
+    created_at?: string;
+}
+
+export interface Address {
+    id: string;
+    user_id: string;
+    address_line1: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
+    is_default: boolean;
+    created_at: string;
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
+import Image from 'next/image';
 
 export const revalidate = 0; // Disable caching for admin page
 
@@ -43,7 +44,7 @@ export default async function AdminCategoriesPage() {
                                     <div className="avatar">
                                         <div className="mask mask-squircle w-12 h-12">
                                             {category.image_url ? (
-                                                <img src={category.image_url} alt={category.name} />
+                                                <Image src={category.image_url} alt={category.name} fill className="object-cover" />
                                             ) : (
                                                 <div className="bg-base-200 w-full h-full flex items-center justify-center text-xs">No Img</div>
                                             )}

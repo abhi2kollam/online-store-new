@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Order } from '@/types';
+import { Order, Profile, Address } from '@/types';
+import { User } from '@supabase/supabase-js';
 import OrderList from '@/components/OrderList';
 
 export default function ProfilePage() {
     const supabase = createClient();
-    const [user, setUser] = useState<any>(null);
-    const [profile, setProfile] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
+    const [profile, setProfile] = useState<Profile | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
@@ -19,7 +20,7 @@ export default function ProfilePage() {
     });
     const router = useRouter();
 
-    const [addresses, setAddresses] = useState<any[]>([]);
+    const [addresses, setAddresses] = useState<Address[]>([]);
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [newAddress, setNewAddress] = useState({
         address_line1: '',
@@ -69,7 +70,7 @@ export default function ProfilePage() {
         };
 
         getUser();
-    }, [router]);
+    }, [router, supabase]);
 
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();

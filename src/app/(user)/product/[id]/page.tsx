@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ImageGallery from '@/components/ImageGallery';
 import TrendingProductCard from '@/components/TrendingProductCard';
@@ -49,7 +48,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="col-span-1 md:col-span-2 my-8">
                 <h2 className="text-3xl font-bold mb-8">Explore More</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {relatedProducts?.map((relatedProduct: any) => (
+                    {relatedProducts?.map((relatedProduct) => (
                         <TrendingProductCard key={relatedProduct.id} product={relatedProduct} />
                     ))}
                 </div>

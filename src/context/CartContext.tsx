@@ -8,6 +8,7 @@ import { User } from '@supabase/supabase-js';
 export interface CartItem extends Product {
     quantity: number;
     variantId?: number;
+    image?: string;
 }
 
 interface CartContextType {
@@ -50,6 +51,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                     // Map and deduplicate items
                     const mappedItemsMap = new Map<string, CartItem>();
 
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     cartData.forEach((item: any) => {
                         const product = item.product;
                         const variant = item.variant;
@@ -61,7 +63,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                             id: product.id.toString(), // Ensure ID is string
                             price: variant ? variant.price : product.price,
                             stock: variant ? variant.stock : product.stock,
-                            image: variant?.image_url || product.image_url || product.image, // Handle image fallback
+                            image: variant?.image_url || product.image_url, // Handle image fallback
                         };
 
                         const cartItem: CartItem = {
@@ -114,7 +116,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return () => {
             subscription.unsubscribe();
         };
-    }, []);
+    }, [supabase]);
 
     // Save to localStorage if guest
     useEffect(() => {

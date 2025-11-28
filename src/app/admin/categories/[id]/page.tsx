@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import MediaGallery from '@/components/MediaGallery';
+import Image from 'next/image';
 
 export default function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -39,7 +40,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
         };
 
         fetchCategory();
-    }, [id]);
+    }, [id, router, supabase]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -86,9 +87,10 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
 
             setImage(publicUrl);
             setRefreshTrigger(prev => prev + 1);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error uploading image:', error);
-            alert(`Error uploading image: ${error.message}`);
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            alert(`Error uploading image: ${message}`);
         } finally {
             setUploading(false);
         }
@@ -124,7 +126,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
                     <div className="flex flex-col gap-4">
                         {image && (
                             <div className="relative w-full h-48 rounded-lg overflow-hidden border">
-                                <img src={image} alt="Category preview" className="w-full h-full object-cover" />
+                                <Image src={image} alt="Category preview" fill className="object-cover" />
                                 <button
                                     type="button"
                                     className="absolute top-2 right-2 btn btn-circle btn-sm btn-error"

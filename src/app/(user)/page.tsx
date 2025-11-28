@@ -4,7 +4,6 @@ import HeroSection from '@/components/HeroSection';
 import ServiceHighlights from '@/components/ServiceHighlights';
 import Newsletter from '@/components/Newsletter';
 import DealBanner from '@/components/DealBanner';
-import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 
 export default async function Home() {

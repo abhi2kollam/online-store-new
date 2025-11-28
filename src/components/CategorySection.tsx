@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Category {
     id: string;
@@ -57,10 +58,11 @@ const CategorySection = ({ categories }: CategorySectionProps) => {
                 {categories.map((category) => (
                     <div key={category.id} className="min-w-[280px] sm:min-w-[320px] snap-start">
                         <Link href={`/shop?category=${category.name}`} className="group relative h-96 rounded-2xl overflow-hidden cursor-pointer block">
-                            <img
+                            <Image
                                 src={category.image_url}
                                 alt={category.name}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                fill
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
                             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 px-6 py-2 rounded-full flex items-center gap-2 transition-transform group-hover:scale-105">
