@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import ImageGallery from '@/components/ImageGallery';
 import TrendingProductCard from '@/components/TrendingProductCard';
 import ProductDetails from '@/components/ProductDetails';
 import { createClient } from '@/utils/supabase/server';
@@ -39,13 +38,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
         .limit(4);
 
     return (
-        <div className="grid md:grid-cols-2 gap-8 mt-8">
-            <ImageGallery images={images} name={product.name} />
-
-            <ProductDetails product={product} />
+        <div className="mt-8">
+            <ProductDetails product={product} initialImages={images} />
 
             {/* Explore More Section */}
-            <div className="col-span-1 md:col-span-2 my-8">
+            <div className="my-8">
                 <h2 className="text-3xl font-bold mb-8">Explore More</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {relatedProducts?.map((relatedProduct) => (

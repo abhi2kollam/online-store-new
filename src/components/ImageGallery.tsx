@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface ImageGalleryProps {
@@ -10,6 +10,12 @@ interface ImageGalleryProps {
 
 const ImageGallery = ({ images, name }: ImageGalleryProps) => {
     const [selectedImage, setSelectedImage] = useState(images[0]);
+
+    useEffect(() => {
+        if (images.length > 0) {
+            setSelectedImage(images[0]);
+        }
+    }, [images]);
 
     return (
         <div className="flex flex-col-reverse md:flex-row gap-4 h-96 md:h-[600px]">

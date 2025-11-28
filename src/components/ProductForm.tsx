@@ -42,6 +42,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
     // Variant State
     const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]); // ["Color", "Size"]
     const [variants, setVariants] = useState<Variant[]>([]);
+    const [loadingVariants, setLoadingVariants] = useState(false);
 
     const [formData, setFormData] = useState<Partial<Product>>(
         initialData || {
@@ -83,6 +84,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
         if (!isEdit || !initialData?.id || productType !== 'variant') return;
 
         const fetchVariants = async () => {
+            setLoadingVariants(true);
             const { data: variantsData, error } = await supabase
                 .from('product_variants')
                 .select(`
@@ -96,6 +98,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
 
             if (error) {
                 console.error('Error fetching variants:', error);
+                setLoadingVariants(false);
                 return;
             }
 
@@ -127,6 +130,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 });
                 setSelectedAttributes(Array.from(attrs));
             }
+            setLoadingVariants(false);
         };
 
         fetchVariants();
@@ -461,125 +465,135 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
 
                         <h3 className="font-bold text-lg">Variants</h3>
 
-                        {/* Attribute Selector */}
-                        <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
-                            <div className="form-control w-full max-w-xs">
-                                <label className="label"><span className="label-text font-semibold">Add Attribute</span></label>
-                                <select className="select select-bordered" onChange={handleAttributeSelect} value="">
-                                    <option value="" disabled>Select Attribute</option>
-                                    {attributes.filter(a => !selectedAttributes.includes(a.name)).map(a => (
-                                        <option key={a.id} value={a.name}>{a.name}</option>
-                                    ))}
-                                </select>
+                        {loadingVariants ? (
+                            <div className="space-y-4 animate-pulse">
+                                <div className="h-10 bg-base-300 rounded w-1/3 mb-4"></div>
+                                <div className="h-40 bg-base-300 rounded w-full mb-4"></div>
+                                <div className="h-40 bg-base-300 rounded w-full"></div>
                             </div>
-
-                            {/* Selected Attributes */}
-                            <div className="flex flex-wrap gap-2 mb-1">
-                                {selectedAttributes.map(attr => (
-                                    <div key={attr} className="badge badge-primary gap-2 p-3">
-                                        {attr}
-                                        <button type="button" onClick={() => handleRemoveAttribute(attr)} className="btn btn-xs btn-circle btn-ghost">✕</button>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="divider"></div>
-
-                        {/* Variant List */}
-                        {selectedAttributes.length > 0 && (
-                            <div className="space-y-4">
-                                <button type="button" onClick={addVariant} className="btn btn-accent btn-sm">+ Add Variant</button>
-
-                                {variants.map((variant, index) => (
-                                    <div key={index} className="card bg-base-100 shadow-sm p-4 border">
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-                                            {selectedAttributes.map(attr => (
-                                                <div key={attr} className="form-control">
-                                                    <label className="label text-xs">{attr}</label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder={attr}
-                                                        className="input input-bordered input-sm"
-                                                        value={variant.attributes[attr] || ''}
-                                                        onChange={(e) => updateVariant(index, attr, e.target.value)}
-                                                        required
-                                                    />
-                                                </div>
+                        ) : (
+                            <>
+                                {/* Attribute Selector */}
+                                <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
+                                    <div className="form-control w-full max-w-xs">
+                                        <label className="label"><span className="label-text font-semibold">Add Attribute</span></label>
+                                        <select className="select select-bordered" onChange={handleAttributeSelect} value="">
+                                            <option value="" disabled>Select Attribute</option>
+                                            {attributes.filter(a => !selectedAttributes.includes(a.name)).map(a => (
+                                                <option key={a.id} value={a.name}>{a.name}</option>
                                             ))}
-                                        </div>
-                                        <div className="grid grid-cols-3 gap-4">
-                                            <div className="form-control">
-                                                <label className="label text-xs">SKU</label>
-                                                <input
-                                                    type="text"
-                                                    className="input input-bordered input-sm"
-                                                    value={variant.sku}
-                                                    onChange={(e) => updateVariant(index, 'sku', e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="form-control">
-                                                <label className="label text-xs">Price</label>
-                                                <input
-                                                    type="number"
-                                                    className="input input-bordered input-sm"
-                                                    value={variant.price}
-                                                    onChange={(e) => updateVariant(index, 'price', parseFloat(e.target.value))}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="form-control">
-                                                <label className="label text-xs">Stock</label>
-                                                <input
-                                                    type="number"
-                                                    className="input input-bordered input-sm"
-                                                    value={variant.stock}
-                                                    onChange={(e) => updateVariant(index, 'stock', parseInt(e.target.value))}
-                                                    required
-                                                />
-                                            </div>
-                                        </div>
+                                        </select>
+                                    </div>
 
-                                        {/* Variant Images */}
-                                        <div className="mt-4 border-t pt-2">
-                                            <label className="label text-xs font-bold">Variant Images</label>
-                                            <div className="flex flex-col gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xs w-20">Main:</span>
-                                                    <button type="button" onClick={() => openMediaPicker('variant_main', index)} className="btn btn-xs btn-outline gap-1">
-                                                        <ImageIcon size={12} /> Select
-                                                    </button>
-                                                    {variant.image_url && (
-                                                        <div className="avatar">
-                                                            <div className="w-8 h-8 rounded border relative">
-                                                                <Image src={variant.image_url} alt="Variant Main" fill className="object-cover" />
-                                                            </div>
+                                    {/* Selected Attributes */}
+                                    <div className="flex flex-wrap gap-2 mb-1">
+                                        {selectedAttributes.map(attr => (
+                                            <div key={attr} className="badge badge-primary gap-2 p-3">
+                                                {attr}
+                                                <button type="button" onClick={() => handleRemoveAttribute(attr)} className="btn btn-xs btn-circle btn-ghost">✕</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="divider"></div>
+
+                                {/* Variant List */}
+                                {selectedAttributes.length > 0 && (
+                                    <div className="space-y-4">
+                                        <button type="button" onClick={addVariant} className="btn btn-accent btn-sm">+ Add Variant</button>
+
+                                        {variants.map((variant, index) => (
+                                            <div key={index} className="card bg-base-100 shadow-sm p-4 border">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+                                                    {selectedAttributes.map(attr => (
+                                                        <div key={attr} className="form-control">
+                                                            <label className="label text-xs">{attr}</label>
+                                                            <input
+                                                                type="text"
+                                                                placeholder={attr}
+                                                                className="input input-bordered input-sm"
+                                                                value={variant.attributes[attr] || ''}
+                                                                onChange={(e) => updateVariant(index, attr, e.target.value)}
+                                                                required
+                                                            />
                                                         </div>
-                                                    )}
+                                                    ))}
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xs w-20">Gallery:</span>
-                                                    <button type="button" onClick={() => openMediaPicker('variant_gallery', index)} className="btn btn-xs btn-outline gap-1">
-                                                        <ImageIcon size={12} /> Add
-                                                    </button>
-                                                    <div className="flex gap-1">
-                                                        {variant.images?.map((img, imgIndex) => (
-                                                            <div key={imgIndex} className="avatar">
-                                                                <div className="w-8 h-8 rounded border relative">
-                                                                    <Image src={img} alt={`Variant ${imgIndex}`} fill className="object-cover" />
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                                <div className="grid grid-cols-3 gap-4">
+                                                    <div className="form-control">
+                                                        <label className="label text-xs">SKU</label>
+                                                        <input
+                                                            type="text"
+                                                            className="input input-bordered input-sm"
+                                                            value={variant.sku}
+                                                            onChange={(e) => updateVariant(index, 'sku', e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div className="form-control">
+                                                        <label className="label text-xs">Price</label>
+                                                        <input
+                                                            type="number"
+                                                            className="input input-bordered input-sm"
+                                                            value={variant.price}
+                                                            onChange={(e) => updateVariant(index, 'price', parseFloat(e.target.value))}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="form-control">
+                                                        <label className="label text-xs">Stock</label>
+                                                        <input
+                                                            type="number"
+                                                            className="input input-bordered input-sm"
+                                                            value={variant.stock}
+                                                            onChange={(e) => updateVariant(index, 'stock', parseInt(e.target.value))}
+                                                            required
+                                                        />
                                                     </div>
                                                 </div>
+
+                                                {/* Variant Images */}
+                                                <div className="mt-4 border-t pt-2">
+                                                    <label className="label text-xs font-bold">Variant Images</label>
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs w-20">Main:</span>
+                                                            <button type="button" onClick={() => openMediaPicker('variant_main', index)} className="btn btn-xs btn-outline gap-1">
+                                                                <ImageIcon size={12} /> Select
+                                                            </button>
+                                                            {variant.image_url && (
+                                                                <div className="avatar">
+                                                                    <div className="w-8 h-8 rounded border relative">
+                                                                        <Image src={variant.image_url} alt="Variant Main" fill className="object-cover" />
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs w-20">Gallery:</span>
+                                                            <button type="button" onClick={() => openMediaPicker('variant_gallery', index)} className="btn btn-xs btn-outline gap-1">
+                                                                <ImageIcon size={12} /> Add
+                                                            </button>
+                                                            <div className="flex gap-1">
+                                                                {variant.images?.map((img, imgIndex) => (
+                                                                    <div key={imgIndex} className="avatar">
+                                                                        <div className="w-8 h-8 rounded border relative">
+                                                                            <Image src={img} alt={`Variant ${imgIndex}`} fill className="object-cover" />
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-end mt-2">
+                                                    <button type="button" onClick={() => removeVariant(index)} className="btn btn-xs btn-error btn-outline">Remove</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex justify-end mt-2">
-                                            <button type="button" onClick={() => removeVariant(index)} className="btn btn-xs btn-error btn-outline">Remove</button>
-                                        </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
+                                )}
+                            </>
                         )}
                     </div>
                 )}
