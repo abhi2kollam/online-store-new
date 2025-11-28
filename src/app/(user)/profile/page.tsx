@@ -63,9 +63,36 @@ export default function ProfilePage() {
                 }
             }
 
-            // Fetch mock orders - removed
-            // const mockOrders = await getOrders();
-            setOrders([]);
+            // Fetch orders
+            const { data: ordersData } = await supabase
+                .from('orders')
+                .select(`
+                    *,
+                    order_items (
+                        quantity,
+                        price,
+                        products (name)
+                    )
+                `)
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (ordersData) {
+                const formattedOrders: Order[] = ordersData.map(order => ({
+                    id: order.id,
+                    date: new Date(order.created_at).toLocaleDateString(),
+                    total: order.total_amount,
+                    status: order.status,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    items: order.order_items.map((item: any) => ({
+                        name: item.products?.name || 'Unknown Product',
+                        quantity: item.quantity,
+                        price: item.price
+                    }))
+                }));
+                setOrders(formattedOrders);
+            }
+
             setLoading(false);
         };
 

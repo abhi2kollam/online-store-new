@@ -27,10 +27,11 @@ export default function OrderList({ orders }: OrderListProps) {
                             <td>{order.id}</td>
                             <td>{order.date}</td>
                             <td>
-                                <div className={`badge ${order.status === 'Delivered' ? 'badge-success' :
-                                    order.status === 'Processing' ? 'badge-warning' : 'badge-info'
+                                <div className={`badge ${order.status === 'Delivered' || order.status === 'paid' ? 'badge-success' :
+                                        order.status === 'Processing' || order.status === 'pending' ? 'badge-warning' :
+                                            order.status === 'failed' ? 'badge-error' : 'badge-info'
                                     }`}>
-                                    {order.status}
+                                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                 </div>
                             </td>
                             <td>${order.total.toFixed(2)}</td>

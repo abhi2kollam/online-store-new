@@ -15,7 +15,7 @@ export interface Order {
     id: string;
     date: string;
     total: number;
-    status: 'Delivered' | 'Processing' | 'Shipped';
+    status: 'Delivered' | 'Processing' | 'Shipped' | 'paid' | 'pending' | 'failed';
     items: { name: string; quantity: number; price: number }[];
 }
 

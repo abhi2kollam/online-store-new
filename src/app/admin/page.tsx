@@ -7,10 +7,43 @@ export default async function AdminDashboard() {
     const { count: totalCustomers } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('role', 'admin');
     const { count: totalCategories } = await supabase.from('categories').select('*', { count: 'exact', head: true });
 
-    // Orders not implemented yet
-    const totalRevenue = 0;
-    const totalOrders = 0;
-    const orders: Order[] = [];
+    // Fetch Orders Data
+    const { count: totalOrders } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true });
+
+    const { data: revenueData } = await supabase
+        .from('orders')
+        .select('total_amount')
+        .eq('status', 'paid');
+
+    const totalRevenue = revenueData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+
+    const { data: recentOrders } = await supabase
+        .from('orders')
+        .select(`
+            *,
+            order_items (
+                quantity,
+                price,
+                products (name)
+            )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+    const orders: Order[] = recentOrders?.map(order => ({
+        id: order.id,
+        date: new Date(order.created_at).toLocaleDateString(),
+        total: order.total_amount,
+        status: order.status,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        items: order.order_items.map((item: any) => ({
+            name: item.products?.name || 'Unknown Product',
+            quantity: item.quantity,
+            price: item.price
+        }))
+    })) || [];
 
     return (
         <div className="space-y-8">
