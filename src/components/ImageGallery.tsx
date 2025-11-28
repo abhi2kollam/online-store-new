@@ -33,6 +33,7 @@ const ImageGallery = ({ images, name }: ImageGalleryProps) => {
                             alt={`${name} view ${index + 1}`}
                             fill
                             className="object-cover"
+                            sizes="(max-width: 768px) 20vw, 10vw"
                         />
                     </button>
                 ))}
@@ -46,6 +47,7 @@ const ImageGallery = ({ images, name }: ImageGalleryProps) => {
                     fill
                     className="object-cover"
                     priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
                 />
             </div>
         </div>

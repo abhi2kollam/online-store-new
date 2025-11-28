@@ -39,18 +39,28 @@ export default function CartDrawerContent() {
                     </div>
                 ) : (
                     items.map((item) => (
-                        <div key={`${item.id}-${item.variantId}`} className="flex gap-4 p-3 bg-base-200/50 rounded-lg group relative">
+                        <div key={`${item.id}-${item.variantId ?? 'default'}`} className="flex gap-4 p-3 bg-base-200/50 rounded-lg group relative">
                             <div className="w-16 h-16 relative rounded-md overflow-hidden bg-base-300 shrink-0">
                                 <Image
                                     src={item.image || item.image_url}
                                     alt={item.name}
                                     fill
                                     className="object-cover"
+                                    sizes="64px"
                                 />
                             </div>
                             <div className="flex-1 flex flex-col justify-between">
                                 <div>
                                     <h3 className="font-medium text-sm line-clamp-2">{item.name}</h3>
+                                    {item.attributes && (
+                                        <div className="text-xs text-base-content/70 mt-1 flex flex-wrap gap-x-2">
+                                            {Object.entries(item.attributes).map(([key, value]) => (
+                                                <span key={key}>
+                                                    <span className="font-semibold">{key}:</span> {value}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                     <div className="mt-2">
                                         <QuantitySelector
                                             quantity={item.quantity}

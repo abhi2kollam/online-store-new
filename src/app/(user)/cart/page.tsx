@@ -24,19 +24,31 @@ export default function CartPage() {
             <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
 
             <div className="space-y-4">
-                {items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-4 bg-base-100 p-4 rounded-lg shadow">
+                {items.map((item, index) => (
+                    <div key={`${item.id}-${item.variantId ?? 'default'}`} className="flex items-center gap-4 bg-base-100 p-4 rounded-lg shadow">
                         <div className="relative h-24 w-24 shrink-0">
                             <Image
                                 src={item.image || item.image_url}
                                 alt={item.name}
                                 fill
                                 className="object-cover rounded"
+                                sizes="96px"
+                                priority={index === 0}
                             />
                         </div>
                         <div className="grow">
-                            <h3 className="font-bold text-lg">{item.name}</h3>
-                            <p className="text-sm text-base-content/70">{item.category}</p>
+                            <Link href={`/product/${item.id}`} className="font-bold text-lg hover:underline">
+                                {item.name}
+                            </Link>
+                            {item.attributes && (
+                                <div className="text-sm text-base-content/70 mt-1">
+                                    {Object.entries(item.attributes).map(([key, value]) => (
+                                        <span key={key} className="mr-3">
+                                            <span className="font-semibold">{key}:</span> {value}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                             <div className="mt-2">
                                 <QuantitySelector
                                     quantity={item.quantity}
@@ -46,10 +58,15 @@ export default function CartPage() {
                             </div>
                         </div>
                         <div className="text-right">
+                            {item.quantity > 1 && (
+                                <p className="text-sm text-base-content/70 mb-1">
+                                    ${item.price.toFixed(2)} x {item.quantity}
+                                </p>
+                            )}
                             <p className="font-bold text-xl">${(item.price * item.quantity).toFixed(2)}</p>
                             <button
                                 className="btn btn-error btn-xs mt-2"
-                                onClick={() => removeFromCart(item.id)}
+                                onClick={() => removeFromCart(item.id, item.variantId)}
                             >
                                 Remove
                             </button>

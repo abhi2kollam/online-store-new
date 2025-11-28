@@ -9,6 +9,7 @@ export interface CartItem extends Product {
     quantity: number;
     variantId?: number;
     image?: string;
+    attributes?: Record<string, string>;
 }
 
 interface CartContextType {
@@ -43,7 +44,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         quantity,
                         variant_id,
                         product:products ( * ),
-                        variant:product_variants ( * )
+                        variant:product_variants (
+                            *,
+                            product_variant_attributes (
+                                value,
+                                attributes (name)
+                            )
+                        )
                     `);
 
                 if (error) {
@@ -58,6 +65,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         const variant = item.variant;
                         const variantId = item.variant_id; // Can be null
 
+                        let attributes: Record<string, string> | undefined = undefined;
+                        if (variant && variant.product_variant_attributes) {
+                            attributes = {};
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            variant.product_variant_attributes.forEach((pva: any) => {
+                                if (pva.attributes && pva.attributes.name) {
+                                    attributes![pva.attributes.name] = pva.value;
+                                }
+                            });
+                        }
+
                         // If variant exists, use its price and stock, but keep product details
                         const finalProduct = {
                             ...product,
@@ -71,6 +89,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                             ...finalProduct,
                             quantity: item.quantity,
                             variantId: variantId,
+                            attributes: attributes
                         };
 
                         // Create a unique key for deduplication
