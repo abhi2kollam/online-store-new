@@ -54,6 +54,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             image_url: '',
             images: [],
             stock: 0,
+            product_code: '',
         }
     );
 
@@ -288,6 +289,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                 image_url: formData.image_url,
                 images: formData.images,
                 product_type: productType,
+                product_code: formData.product_code,
             };
 
             // If variable product, set price/stock and main image from default variant
@@ -414,6 +416,10 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                     <div className="form-control">
                         <label className="label"><span className="label-text font-semibold">Product Name</span></label>
                         <input type="text" name="name" value={formData.name} onChange={handleChange} className="input input-bordered w-full" required />
+                    </div>
+                    <div className="form-control">
+                        <label className="label"><span className="label-text font-semibold">Product Code</span></label>
+                        <input type="text" name="product_code" value={formData.product_code || ''} onChange={handleChange} className="input input-bordered w-full" placeholder="e.g. PROD-001" />
                     </div>
                     <div className="form-control">
                         <label className="label"><span className="label-text font-semibold">Category</span></label>

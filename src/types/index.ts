@@ -12,6 +12,7 @@ export interface Product {
     rating_avg?: number;
     rating_count?: number;
     slug?: string;
+    product_code?: string;
 }
 
 export interface Order {

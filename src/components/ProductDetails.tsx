@@ -132,6 +132,7 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
                 <div>
                     <h1 className="text-4xl font-bold">{product.name}</h1>
                     <div className="badge badge-accent mt-2">{product.categories?.name || product.category}</div>
+                    {product.product_code && <p className="text-sm text-gray-500 mt-1">Product Code: {product.product_code}</p>}
                 </div>
                 <p className="text-2xl font-bold text-primary">${displayPrice.toFixed(2)}</p>
                 <p className="text-lg text-base-content/80">{product.description}</p>

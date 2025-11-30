@@ -40,6 +40,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     {product.name}
                     <span className="badge badge-accent badge-sm">{product.category}</span>
                 </h2>
+                {product.product_code && <p className="text-xs text-gray-500 mb-1">Code: {product.product_code}</p>}
                 <div className={`flex items-center mt-1 ${(!product.rating_count || product.rating_count === 0) ? 'invisible' : ''}`}>
                     <StarRating rating={product.rating_avg || 0} readOnly size={14} />
                     <span className="text-xs text-gray-600 ml-1">({product.rating_count || 0})</span>
