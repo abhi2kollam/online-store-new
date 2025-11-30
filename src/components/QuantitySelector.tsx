@@ -22,7 +22,7 @@ export default function QuantitySelector({
     const iconSize = size === 'sm' ? 12 : size === 'lg' ? 20 : 16;
 
     return (
-        <div className="flex items-center border rounded-lg overflow-hidden w-fit">
+        <div className="flex items-center border border-neutral-400 rounded-lg overflow-hidden w-fit">
             <button
                 type="button"
                 onClick={onDecrease}
