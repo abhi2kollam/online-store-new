@@ -48,6 +48,9 @@ export default function AdminProductRow({ product }: AdminProductRowProps) {
                 </td>
                 <td>
                     <div className="font-bold">{product.name}</div>
+                    {product.product_code && (
+                        <div className="text-xs text-gray-500">Code: {product.product_code}</div>
+                    )}
                 </td>
                 <td>{product.categories?.name || 'Uncategorized'}</td>
                 <td>
