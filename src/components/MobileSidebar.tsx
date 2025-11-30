@@ -74,10 +74,14 @@ export default function MobileSidebar() {
         );
     };
 
+    const isActive = (path: string) => {
+        return pathname === path ? 'text-accent font-semibold' : 'hover:text-accent font-semibold';
+    };
+
     return (
         <ul className="menu p-4 w-80 min-h-full bg-base-100 text-base-content">
-            <li><Link href="/" onClick={closeMenu} className={pathname === '/' ? 'active' : ''}>Home</Link></li>
-            <li><Link href="/shop" onClick={closeMenu} className={pathname === '/shop' ? 'active' : ''}>Shop All</Link></li>
+            <li><Link href="/" onClick={closeMenu} className={isActive('/')}>Home</Link></li>
+            <li><Link href="/shop" onClick={closeMenu} className={isActive('/shop')}>Shop All</Link></li>
             <div className="divider">Categories</div>
             {categories.map((category) => (
                 <CategoryItem key={category.id} category={category} />
