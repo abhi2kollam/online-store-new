@@ -9,6 +9,8 @@ export interface Product {
     stock: number;
     product_type?: 'simple' | 'variant';
     categories?: { name: string };
+    rating_avg?: number;
+    rating_count?: number;
 }
 
 export interface Order {

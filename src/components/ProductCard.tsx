@@ -33,13 +33,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
                         {product.description}
                     </p>
                 </div>
-                {/* Overlay button removed */}
             </figure>
             <div className="card-body p-4">
                 <h2 className="card-title text-lg">
                     {product.name}
                     <span className="badge badge-accent badge-sm">{product.category}</span>
                 </h2>
+                {(product.rating_count || 0) > 0 && (
+                    <div className="flex items-center mt-1">
+                        <span className="text-yellow-400 text-xs">★</span>
+                        <span className="text-xs text-gray-600 ml-1">{product.rating_avg} ({product.rating_count})</span>
+                    </div>
+                )}
                 <div className="card-actions justify-between items-center mt-2">
                     <span className="text-xl font-bold">${product.price.toFixed(2)}</span>
                     {product.product_type === 'simple' ? (

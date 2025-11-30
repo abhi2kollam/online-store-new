@@ -23,6 +23,7 @@ export default function AdminSidebar() {
             children: [
                 { href: '/admin/products', label: 'List' },
                 { href: '/admin/attributes', label: 'Attributes' },
+                { href: '/admin/reviews', label: 'Reviews' },
             ]
         },
         { href: '/admin/categories', label: 'Categories', icon: Layers },
@@ -47,11 +48,12 @@ export default function AdminSidebar() {
                 </li>
                 {links.map((link, index) => {
                     const Icon = link.icon;
+                    const isActive = pathname === link.href || (link.children && link.children.some(child => pathname === child.href));
 
                     if (link.children) {
                         return (
                             <li key={index}>
-                                <details open>
+                                <details>
                                     <summary>
                                         <Icon size={20} />
                                         {link.label}
@@ -61,7 +63,7 @@ export default function AdminSidebar() {
                                             <li key={child.href}>
                                                 <Link
                                                     href={child.href}
-                                                    className={pathname === child.href ? 'active' : ''}
+                                                    className={pathname === child.href ? 'menu-active' : ''}
                                                 >
                                                     {child.label}
                                                 </Link>
@@ -77,10 +79,10 @@ export default function AdminSidebar() {
                         <li key={link.href}>
                             <Link
                                 href={link.href!}
-                                className={pathname === link.href ? 'active' : ''}
+                                className={pathname === link.href ? 'menu-active' : ''}
                             >
                                 <Icon size={20} />
-                                {link.label}
+                                <span className="flex-1">{link.label}</span>
                             </Link>
                         </li>
                     );

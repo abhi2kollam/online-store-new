@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import TrendingSection from '@/components/TrendingSection';
 import ProductDetails from '@/components/ProductDetails';
+import ReviewList from '@/components/ReviewList';
+import ReviewForm from '@/components/ReviewForm';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 0;
@@ -51,6 +53,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return (
         <div className="mt-8">
             <ProductDetails product={product} initialImages={images} />
+
+            {/* Reviews Section */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    <div className="lg:col-span-7">
+                        <ReviewList
+                            productId={id}
+                            initialAverage={product.rating_avg}
+                            initialCount={product.rating_count}
+                        />
+                    </div>
+                    <div className="lg:col-span-5">
+                        <div className="sticky top-24">
+                            <ReviewForm productId={id} />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Explore More Section */}
             <div className="my-8">
