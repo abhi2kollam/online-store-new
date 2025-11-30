@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
+import StarRating from './StarRating';
 
 interface ProductCardProps {
     product: Product;
@@ -40,8 +41,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
                     <span className="badge badge-accent badge-sm">{product.category}</span>
                 </h2>
                 <div className={`flex items-center mt-1 ${(!product.rating_count || product.rating_count === 0) ? 'invisible' : ''}`}>
-                    <span className="text-yellow-400 text-xs">★</span>
-                    <span className="text-xs text-gray-600 ml-1">{product.rating_avg || '0.0'} ({product.rating_count || 0})</span>
+                    <StarRating rating={product.rating_avg || 0} readOnly size={14} />
+                    <span className="text-xs text-gray-600 ml-1">({product.rating_count || 0})</span>
                 </div>
                 <div className="card-actions justify-between items-center mt-2">
                     <span className="text-xl font-bold">${product.price.toFixed(2)}</span>

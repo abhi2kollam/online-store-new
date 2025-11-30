@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/types';
+import StarRating from './StarRating';
 
 interface TrendingProductCardProps {
     product: Product;
@@ -32,6 +33,12 @@ const TrendingProductCard = ({ product }: TrendingProductCardProps) => {
             <div className="absolute bottom-4 left-4 right-4 bg-white/90  rounded-2xl p-4 flex justify-between items-center shadow-sm">
                 <div>
                     <h3 className="font-bold text-gray-900">{product.name}</h3>
+                    {product.rating_count && product.rating_count > 0 ? (
+                        <div className="flex items-center gap-1 text-xs mt-1">
+                            <StarRating rating={product.rating_avg || 0} readOnly size={14} />
+                            <span className="text-gray-500">({product.rating_count})</span>
+                        </div>
+                    ) : null}
                     <div className="flex items-center gap-2 mt-1">
                         <span className="font-bold text-gray-900">${product.price}</span>
                         <span className="text-gray-400 line-through text-sm">${originalPrice}</span>
