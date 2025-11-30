@@ -6,7 +6,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
-import { User as UserIcon, LogOut, UserCircle } from 'lucide-react';
+import { User as UserIcon, LogOut, UserCircle, Menu, X } from 'lucide-react';
+import { useMobileMenu } from '@/context/MobileMenuContext';
 
 const Navbar = () => {
     const { items } = useCart();
@@ -15,8 +16,7 @@ const Navbar = () => {
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const supabase = createClient();
-
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { isOpen, toggleMenu } = useMobileMenu();
 
     useEffect(() => {
         const getUser = async () => {
@@ -47,11 +47,9 @@ const Navbar = () => {
                 <div className="navbar-start">
                     <button
                         className="btn btn-ghost md:hidden"
-                        onClick={() => setIsMobileMenuOpen(true)}
+                        onClick={toggleMenu}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
-                        </svg>
+                        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
                     <Link href="/" className="btn btn-ghost text-accent text-2xl font-extrabold tracking-tight">Online Store</Link>
                 </div>
@@ -105,29 +103,6 @@ const Navbar = () => {
                     </ul>
                 </div>
             </div>
-
-            {/* Mobile Menu Overlay */}
-            {isMobileMenuOpen && (
-                <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setIsMobileMenuOpen(false)}>
-                    <div
-                        className="fixed left-0 top-0 h-full w-64 bg-base-100 p-4 shadow-lg transition-transform duration-300 ease-in-out"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-accent">Menu</h2>
-                            <button onClick={() => setIsMobileMenuOpen(false)} className="btn btn-ghost btn-circle btn-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <ul className="menu p-0 text-lg gap-2">
-                            <li><Link href="/" onClick={() => setIsMobileMenuOpen(false)} className={pathname === '/' ? 'active' : ''}>Home</Link></li>
-                            <li><Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className={pathname === '/shop' ? 'active' : ''}>Shop</Link></li>
-                        </ul>
-                    </div>
-                </div>
-            )}
         </>
     );
 };

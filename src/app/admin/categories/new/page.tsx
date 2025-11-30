@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import MediaGallery from '@/components/MediaGallery';
 import Image from 'next/image';
@@ -13,7 +13,16 @@ export default function NewCategoryPage() {
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [parentId, setParentId] = useState<number | null>(null);
+    const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const { data } = await supabase.from('categories').select('id, name').order('name');
+            if (data) setCategories(data);
+        };
+        fetchCategories();
+    }, [supabase]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,7 +33,7 @@ export default function NewCategoryPage() {
         try {
             const { error } = await supabase
                 .from('categories')
-                .insert([{ name, slug, image }]);
+                .insert([{ name, slug, image_url: image, parent_id: parentId }]);
 
             if (error) throw error;
 
@@ -85,6 +94,24 @@ export default function NewCategoryPage() {
                         className="input input-bordered w-full"
                         required
                     />
+                </div>
+
+                <div className="form-control">
+                    <label className="label">
+                        <span className="label-text">Parent Category (Optional)</span>
+                    </label>
+                    <select
+                        className="select select-bordered w-full"
+                        value={parentId || ''}
+                        onChange={(e) => setParentId(e.target.value ? parseInt(e.target.value) : null)}
+                    >
+                        <option value="">None (Top Level)</option>
+                        {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="form-control">

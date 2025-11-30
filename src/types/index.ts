@@ -31,10 +31,13 @@ export interface User {
 }
 
 export interface Category {
-    id: string;
+    id: number;
     name: string;
-    count: number;
-    image: string;
+    slug: string;
+    image_url?: string;
+    parent_id?: number | null;
+    children?: Category[];
+    count?: number; // For product count if needed
 }
 
 export interface Profile {

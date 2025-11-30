@@ -418,4 +418,11 @@ alter table product_variants add column is_default boolean default false;
      a n d   p . e m a i l   i s   n u l l ;  
  e n d ;  
  $ $ ;  
+  
+ - -   A d d   p a r e n t _ i d   t o   c a t e g o r i e s   t a b l e  
+ a l t e r   t a b l e   p u b l i c . c a t e g o r i e s  
+ a d d   c o l u m n   i f   n o t   e x i s t s   p a r e n t _ i d   b i g i n t   r e f e r e n c e s   p u b l i c . c a t e g o r i e s ( i d ) ;  
+  
+ - -   A d d   i n d e x   f o r   p e r f o r m a n c e  
+ c r e a t e   i n d e x   i f   n o t   e x i s t s   i d x _ c a t e g o r i e s _ p a r e n t _ i d   o n   p u b l i c . c a t e g o r i e s ( p a r e n t _ i d ) ;  
  
