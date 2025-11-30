@@ -4,6 +4,7 @@ import CategoryFilter from '@/components/CategoryFilter';
 import { createClient } from '@/utils/supabase/server';
 
 import Pagination from '@/components/Pagination';
+import ScrollAnimation from '@/components/ScrollAnimation';
 
 interface ShopProps {
     searchParams: Promise<{
@@ -74,8 +75,10 @@ export default async function ShopPage({ searchParams }: ShopProps) {
                 {transformedProducts.length > 0 ? (
                     <>
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {transformedProducts.map((product) => (
-                                <ProductCard key={product.id} product={product} />
+                            {transformedProducts.map((product, index) => (
+                                <ScrollAnimation key={product.id} delay={index * 0.1} className="h-full">
+                                    <ProductCard product={product} />
+                                </ScrollAnimation>
                             ))}
                         </div>
                         <Pagination totalPages={totalPages} currentPage={currentPage} />

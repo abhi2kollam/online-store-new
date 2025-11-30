@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import TrendingProductCard from './TrendingProductCard';
 import { Product } from '@/types';
+import ScrollAnimation from './ScrollAnimation';
 
 interface TrendingSectionProps {
     title: string;
@@ -50,10 +51,10 @@ const TrendingSection = ({ title, products }: TrendingSectionProps) => {
                 className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-                {products.map((product) => (
-                    <div key={product.id} className="min-w-[280px] sm:min-w-[320px] snap-start">
+                {products.map((product, index) => (
+                    <ScrollAnimation key={product.id} delay={index * 0.1} className="min-w-[280px] sm:min-w-[320px] snap-start h-full">
                         <TrendingProductCard product={product} />
-                    </div>
+                    </ScrollAnimation>
                 ))}
             </div>
         </section>

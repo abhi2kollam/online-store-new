@@ -5,6 +5,7 @@ import ServiceHighlights from '@/components/ServiceHighlights';
 import Newsletter from '@/components/Newsletter';
 import DealBanner from '@/components/DealBanner';
 import { createClient } from '@/utils/supabase/server';
+import ScrollAnimation from '@/components/ScrollAnimation';
 
 export default async function Home() {
   const supabase = await createClient();
@@ -32,24 +33,39 @@ export default async function Home() {
 
   return (
     <div className="space-y-16 pb-12">
-      <HeroSection />
-      <ServiceHighlights />
+      <ScrollAnimation>
+        <HeroSection />
+      </ScrollAnimation>
+
+      <ScrollAnimation delay={0.2}>
+        <ServiceHighlights />
+      </ScrollAnimation>
 
       {trendingProducts.length > 0 && (
-        <TrendingSection title="Trending Now" products={trendingProducts} />
+        <ScrollAnimation>
+          <TrendingSection title="Trending Now" products={trendingProducts} />
+        </ScrollAnimation>
       )}
 
       {categories && categories.length > 0 && (
-        <CategorySection categories={categories} />
+        <ScrollAnimation>
+          <CategorySection categories={categories} />
+        </ScrollAnimation>
       )}
 
-      <DealBanner />
+      <ScrollAnimation>
+        <DealBanner />
+      </ScrollAnimation>
 
       {trendingProducts.length > 0 && (
-        <TrendingSection title="New Arrivals" products={trendingProducts} />
+        <ScrollAnimation>
+          <TrendingSection title="New Arrivals" products={trendingProducts} />
+        </ScrollAnimation>
       )}
 
-      <Newsletter />
+      <ScrollAnimation>
+        <Newsletter />
+      </ScrollAnimation>
     </div>
   );
 }

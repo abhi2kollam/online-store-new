@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import ScrollAnimation from './ScrollAnimation';
 
 interface Category {
     id: string;
@@ -55,8 +56,8 @@ const CategorySection = ({ categories }: CategorySectionProps) => {
                 className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-                {categories.map((category) => (
-                    <div key={category.id} className="min-w-[280px] sm:min-w-[320px] snap-start">
+                {categories.map((category, index) => (
+                    <ScrollAnimation key={category.id} delay={index * 0.1} className="min-w-[280px] sm:min-w-[320px] snap-start h-full">
                         <Link href={`/shop?category=${category.name}`} className="group relative h-96 rounded-2xl overflow-hidden cursor-pointer block">
                             <Image
                                 src={category.image_url}
@@ -72,7 +73,7 @@ const CategorySection = ({ categories }: CategorySectionProps) => {
                                 </svg>
                             </div>
                         </Link>
-                    </div>
+                    </ScrollAnimation>
                 ))}
             </div>
         </section>
