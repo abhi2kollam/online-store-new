@@ -83,6 +83,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                             price: variant ? variant.price : product.price,
                             stock: variant ? variant.stock : product.stock,
                             image: variant?.image_url || product.image_url, // Handle image fallback
+                            slug: product.slug,
                         };
 
                         const cartItem: CartItem = {

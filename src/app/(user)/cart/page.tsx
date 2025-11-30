@@ -37,7 +37,7 @@ export default function CartPage() {
                             />
                         </div>
                         <div className="grow">
-                            <Link href={`/product/${item.id}`} className="font-bold text-lg hover:underline">
+                            <Link href={`/product/${item.slug}`} className="font-bold text-lg hover:underline">
                                 {item.name}
                             </Link>
                             {item.attributes && (

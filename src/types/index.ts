@@ -11,6 +11,7 @@ export interface Product {
     categories?: { name: string };
     rating_avg?: number;
     rating_count?: number;
+    slug?: string;
 }
 
 export interface Order {

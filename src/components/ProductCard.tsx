@@ -19,7 +19,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
     };
 
     return (
-        <Link href={`/product/${product.id}`} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 cursor-pointer block group">
+        <Link href={`/product/${product.slug}`} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 cursor-pointer block group">
             <figure className="relative h-64 overflow-hidden">
                 <Image
                     src={product.image_url}

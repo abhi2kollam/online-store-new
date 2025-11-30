@@ -11,7 +11,7 @@ const TrendingProductCard = ({ product }: TrendingProductCardProps) => {
     const originalPrice = (product.price * 1.2).toFixed(2);
 
     return (
-        <Link href={`/product/${product.id}`} className="relative w-full h-[400px] rounded-3xl overflow-hidden group block">
+        <Link href={`/product/${product.slug}`} className="relative w-full h-[400px] rounded-3xl overflow-hidden group block">
             {/* Background Image */}
             <div className="absolute inset-0 bg-gray-200">
                 <Image

@@ -9,19 +9,19 @@ export const revalidate = 0;
 
 interface ProductPageProps {
     params: Promise<{
-        id: string;
+        slug: string;
     }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-    const { id } = await params;
+    const { slug } = await params;
     const supabase = await createClient();
 
     // Fetch product from Supabase
     const { data: product, error } = await supabase
         .from('products')
         .select('*, categories(name)')
-        .eq('id', id)
+        .eq('slug', slug)
         .single();
 
     if (error || !product) {
@@ -36,7 +36,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     const { data: relatedProductsData } = await supabase
         .from('products')
         .select('*')
-        .neq('id', id)
+        .neq('id', product.id)
         .limit(8);
 
     // Map to Product type
@@ -59,14 +59,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-7">
                         <ReviewList
-                            productId={id}
+                            productId={product.id.toString()}
                             initialAverage={product.rating_avg}
                             initialCount={product.rating_count}
                         />
                     </div>
                     <div className="lg:col-span-5">
                         <div className="sticky top-24">
-                            <ReviewForm productId={id} />
+                            <ReviewForm productId={product.id.toString()} />
                         </div>
                     </div>
                 </div>
