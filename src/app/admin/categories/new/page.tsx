@@ -15,6 +15,7 @@ export default function NewCategoryPage() {
     const [showGallery, setShowGallery] = useState(false);
     const [parentId, setParentId] = useState<number | null>(null);
     const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
         const fetchCategories = async () => {

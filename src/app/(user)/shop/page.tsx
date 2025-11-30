@@ -16,13 +16,26 @@ export default async function ShopPage({ searchParams }: ShopProps) {
 
     let query = supabase.from('products').select('*');
 
-    if (category && category !== 'All') {
-        // We need to filter by category name, but products table has category_id.
-        // We can join with categories table.
-        // Or fetch category id first.
-        const { data: catData } = await supabase.from('categories').select('id').eq('name', category).single();
-        if (catData) {
-            query = query.eq('category_id', catData.id);
+    // Fetch all categories to build the tree and map
+    const { data: allCategories } = await supabase.from('categories').select('id, name, slug, parent_id');
+    const categoryMap = new Map(allCategories?.map(c => [c.id, c.name]));
+
+    if (category && category !== 'all') {
+        const targetCategory = allCategories?.find(c => c.slug === category);
+
+        if (targetCategory) {
+            // Find all descendant IDs
+            const getDescendantIds = (parentId: number): number[] => {
+                const children = allCategories?.filter(c => c.parent_id === parentId) || [];
+                let ids = children.map(c => c.id);
+                children.forEach(child => {
+                    ids = [...ids, ...getDescendantIds(child.id)];
+                });
+                return ids;
+            };
+
+            const categoryIds = [targetCategory.id, ...getDescendantIds(targetCategory.id)];
+            query = query.in('category_id', categoryIds);
         }
     }
 
@@ -31,14 +44,6 @@ export default async function ShopPage({ searchParams }: ShopProps) {
     }
 
     const { data: products } = await query;
-
-    // Transform products to match Product interface
-    // We need to fetch category names for each product to match the interface?
-    // ProductCard uses 'category' string.
-    // We can fetch categories and map them.
-
-    const { data: categories } = await supabase.from('categories').select('id, name');
-    const categoryMap = new Map(categories?.map(c => [c.id, c.name]));
 
     const transformedProducts = products?.map(p => ({
         ...p,

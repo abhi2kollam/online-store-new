@@ -8,6 +8,7 @@ import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { User as UserIcon, LogOut, UserCircle, Menu, X } from 'lucide-react';
 import { useMobileMenu } from '@/context/MobileMenuContext';
+import CategoryMenu from './CategoryMenu';
 
 const Navbar = () => {
     const { items } = useCart();
@@ -57,6 +58,7 @@ const Navbar = () => {
                     <ul className="menu menu-horizontal px-1 gap-4 ">
                         <li><Link href="/" className={isActive('/')}>Home</Link></li>
                         <li><Link href="/shop" className={isActive('/shop')}>Shop</Link></li>
+                        <CategoryMenu />
                     </ul>
                 </div>
                 <div className="navbar-end">

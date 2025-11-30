@@ -15,10 +15,26 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
+    const [parentId, setParentId] = useState<number | null>(null);
+    const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
-        const fetchCategory = async () => {
+        const fetchData = async () => {
+            // Fetch all categories for dropdown
+            const { data: categoriesData } = await supabase
+                .from('categories')
+                .select('id, name')
+                .order('name');
+
+            if (categoriesData) {
+                // Filter out current category to prevent self-parenting
+                // Note: Ideally we should also filter out descendants to prevent cycles, 
+                // but for now just preventing direct self-reference is a good start.
+                setCategories(categoriesData.filter(c => c.id !== parseInt(id)));
+            }
+
+            // Fetch current category
             const { data, error } = await supabase
                 .from('categories')
                 .select('*')
@@ -34,12 +50,13 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
 
             if (data) {
                 setName(data.name);
-                setImage(data.image || '');
+                setImage(data.image_url || ''); // Use image_url based on schema
+                setParentId(data.parent_id);
             }
             setLoading(false);
         };
 
-        fetchCategory();
+        fetchData();
     }, [id, router, supabase]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -51,7 +68,7 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
         try {
             const { error } = await supabase
                 .from('categories')
-                .update({ name, slug, image_url: image })
+                .update({ name, slug, image_url: image, parent_id: parentId })
                 .eq('id', id);
 
             if (error) throw error;
@@ -116,6 +133,24 @@ export default function EditCategoryPage({ params }: { params: Promise<{ id: str
                         className="input input-bordered w-full"
                         required
                     />
+                </div>
+
+                <div className="form-control">
+                    <label className="label">
+                        <span className="label-text">Parent Category (Optional)</span>
+                    </label>
+                    <select
+                        className="select select-bordered w-full"
+                        value={parentId || ''}
+                        onChange={(e) => setParentId(e.target.value ? parseInt(e.target.value) : null)}
+                    >
+                        <option value="">None (Top Level)</option>
+                        {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="form-control">

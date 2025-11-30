@@ -8,25 +8,25 @@ export default function CategoryFilter() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [, startTransition] = useTransition();
-    const [categories, setCategories] = useState<string[]>(['All']);
+    const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
     const supabase = createClient();
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const { data } = await supabase.from('categories').select('name');
+            const { data } = await supabase.from('categories').select('name, slug').order('name');
             if (data) {
-                setCategories(['All', ...data.map(c => c.name)]);
+                setCategories(data);
             }
         };
         fetchCategories();
     }, [supabase]);
 
-    const activeCategory = searchParams.get('category') || 'All';
+    const activeCategorySlug = searchParams.get('category') || 'all';
 
-    const handleCategoryChange = (category: string) => {
+    const handleCategoryChange = (slug: string) => {
         const params = new URLSearchParams(searchParams);
-        if (category && category !== 'All') {
-            params.set('category', category);
+        if (slug && slug !== 'all') {
+            params.set('category', slug);
         } else {
             params.delete('category');
         }
@@ -38,13 +38,19 @@ export default function CategoryFilter() {
 
     return (
         <div className="tabs tabs-boxed bg-base-100 flex-wrap h-auto">
+            <a
+                className={`tab ${activeCategorySlug === 'all' ? 'tab-active' : ''}`}
+                onClick={() => handleCategoryChange('all')}
+            >
+                All
+            </a>
             {categories.map((category) => (
                 <a
-                    key={category}
-                    className={`tab ${activeCategory === category ? 'tab-active' : ''}`}
-                    onClick={() => handleCategoryChange(category)}
+                    key={category.slug}
+                    className={`tab ${activeCategorySlug === category.slug ? 'tab-active' : ''}`}
+                    onClick={() => handleCategoryChange(category.slug)}
                 >
-                    {category}
+                    {category.name}
                 </a>
             ))}
         </div>
