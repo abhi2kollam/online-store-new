@@ -33,16 +33,59 @@ export default function ProfilePage() {
 
     useEffect(() => {
         const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setUser(user);
-                // Fetch profile
-                const { data: profileData } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+            try {
+                console.log('Fetching user...');
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
 
+                if (authError) {
+                    console.error('Auth error:', authError);
+                    throw authError;
+                }
+
+                if (!user) {
+                    console.log('No user found');
+                    return;
+                }
+
+                setUser(user);
+                console.log('User found:', user.id);
+
+                console.log('Fetching profile, addresses, and orders...');
+                const [profileResult, addressResult, ordersResult] = await Promise.all([
+                    // Fetch profile
+                    supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single(),
+
+                    // Fetch addresses
+                    supabase
+                        .from('addresses')
+                        .select('*')
+                        .eq('user_id', user.id)
+                        .order('created_at', { ascending: false }),
+
+                    // Fetch orders
+                    supabase
+                        .from('orders')
+                        .select(`
+                        *,
+                        order_items (
+                            quantity,
+                            price,
+                            products (name)
+                        )
+                    `)
+                        .eq('user_id', user.id)
+                        .order('created_at', { ascending: false })
+                ]);
+
+                console.log('Data fetch completed');
+
+                // Handle Profile Data
+                const { data: profileData, error: profileError } = profileResult;
+                if (profileError) console.error('Profile fetch error:', profileError);
                 if (profileData) {
                     setProfile(profileData);
                     setFormData({
@@ -51,49 +94,37 @@ export default function ProfilePage() {
                     });
                 }
 
-                // Fetch addresses
-                const { data: addressData } = await supabase
-                    .from('addresses')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('created_at', { ascending: false });
-
+                // Handle Address Data
+                const { data: addressData, error: addressError } = addressResult;
+                if (addressError) console.error('Address fetch error:', addressError);
                 if (addressData) {
                     setAddresses(addressData);
                 }
+
+                // Handle Orders Data
+                const { data: ordersData, error: ordersError } = ordersResult;
+                if (ordersError) console.error('Orders fetch error:', ordersError);
+                if (ordersData) {
+                    const formattedOrders: Order[] = ordersData.map(order => ({
+                        id: order.id,
+                        date: new Date(order.created_at).toLocaleDateString(),
+                        total: order.total_amount,
+                        status: order.status,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        items: order.order_items.map((item: any) => ({
+                            name: item.products?.name || 'Unknown Product',
+                            quantity: item.quantity,
+                            price: item.price
+                        }))
+                    }));
+                    setOrders(formattedOrders);
+                }
+            } catch (error) {
+                console.error('Error in getUser:', error);
+            } finally {
+                console.log('Setting loading to false');
+                setLoading(false);
             }
-
-            // Fetch orders
-            const { data: ordersData } = await supabase
-                .from('orders')
-                .select(`
-                    *,
-                    order_items (
-                        quantity,
-                        price,
-                        products (name)
-                    )
-                `)
-                .eq('user_id', user?.id)
-                .order('created_at', { ascending: false });
-
-            if (ordersData) {
-                const formattedOrders: Order[] = ordersData.map(order => ({
-                    id: order.id,
-                    date: new Date(order.created_at).toLocaleDateString(),
-                    total: order.total_amount,
-                    status: order.status,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    items: order.order_items.map((item: any) => ({
-                        name: item.products?.name || 'Unknown Product',
-                        quantity: item.quantity,
-                        price: item.price
-                    }))
-                }));
-                setOrders(formattedOrders);
-            }
-
-            setLoading(false);
         };
 
         getUser();
