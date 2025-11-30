@@ -53,7 +53,7 @@ export default function AdminSidebar() {
                     if (link.children) {
                         return (
                             <li key={index}>
-                                <details>
+                                <details open>
                                     <summary>
                                         <Icon size={20} />
                                         {link.label}

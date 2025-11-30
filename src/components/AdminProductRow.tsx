@@ -66,6 +66,13 @@ export default function AdminProductRow({ product }: AdminProductRowProps) {
                     )}
                 </td>
                 <td>
+                    <div className="flex items-center">
+                        <span className="text-yellow-500 mr-1">★</span>
+                        <span>{product.rating_avg?.toFixed(1) || '0.0'}</span>
+                        <span className="text-xs text-gray-400 ml-1">({product.rating_count || 0})</span>
+                    </div>
+                </td>
+                <td>
                     {isVariant ? (
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         product.product_variants?.reduce((sum: number, v: any) => sum + v.stock, 0) || 0

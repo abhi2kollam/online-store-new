@@ -72,7 +72,7 @@ export default function ReviewForm({ productId }: ReviewFormProps) {
         setIsSubmitting(true);
         try {
             const result = await addReview(productId, rating, comment, title, images);
-            if (result.error) {
+            if (result?.error) {
                 toast.error(result.error);
             } else {
                 toast.success(result.message || 'Review submitted successfully!');

@@ -49,6 +49,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
                             <th>Name</th>
                             <th>Category</th>
                             <th>Price</th>
+                            <th>Rating</th>
                             <th>Stock</th>
                             <th>Actions</th>
                         </tr>
