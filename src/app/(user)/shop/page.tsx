@@ -1,7 +1,5 @@
 import ProductCard from '@/components/ProductCard';
 import { Metadata } from 'next';
-import SearchBar from '@/components/SearchBar';
-import CategoryFilter from '@/components/CategoryFilter';
 import SortSelect from '@/components/SortSelect';
 import ShopFilters from '@/components/ShopFilters';
 import { createClient } from '@/utils/supabase/server';

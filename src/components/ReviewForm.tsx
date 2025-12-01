@@ -81,7 +81,7 @@ export default function ReviewForm({ productId }: ReviewFormProps) {
                 setComment('');
                 setImages([]);
             }
-        } catch (error) {
+        } catch {
             toast.error('Something went wrong. Please try again.');
         } finally {
             setIsSubmitting(false);

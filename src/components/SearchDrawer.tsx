@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { Search, X, Loader2 } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -43,7 +43,7 @@ export default function SearchDrawer({ isOpen, onClose }: SearchDrawerProps) {
             if (searchTerm.trim().length > 1) {
                 setIsLoading(true);
                 try {
-                    const { data, error } = await supabase
+                    const { data } = await supabase
                         .from('products')
                         .select('id, name, slug, image_url, price')
                         .ilike('name', `%${searchTerm}%`)
@@ -152,13 +152,13 @@ export default function SearchDrawer({ isOpen, onClose }: SearchDrawerProps) {
                                         }}
                                         className="btn btn-link no-underline text-primary"
                                     >
-                                        View all results for "{searchTerm}"
+                                        View all results for &quot;{searchTerm}&quot;
                                     </button>
                                 </div>
                             </div>
                         ) : searchTerm.length > 1 ? (
                             <div className="text-center py-12 text-gray-500">
-                                <p>No products found for "{searchTerm}"</p>
+                                <p>No products found for &quot;{searchTerm}&quot;</p>
                             </div>
                         ) : (
                             <div className="text-center py-12 text-gray-400">

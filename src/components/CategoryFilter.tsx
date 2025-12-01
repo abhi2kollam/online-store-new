@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTransition, useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface CategoryFilterProps {
     vertical?: boolean;

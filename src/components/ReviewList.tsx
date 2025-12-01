@@ -5,11 +5,9 @@ import { getReviewStats } from '@/app/actions/review';
 
 interface ReviewListProps {
     productId: string;
-    initialAverage?: number;
-    initialCount?: number;
 }
 
-export default async function ReviewList({ productId, initialAverage, initialCount }: ReviewListProps) {
+export default async function ReviewList({ productId }: ReviewListProps) {
     const supabase = await createClient();
 
     // Check if current user is admin
@@ -26,7 +24,7 @@ export default async function ReviewList({ productId, initialAverage, initialCou
     }
 
     // Fetch reviews based on role
-    let query = supabase
+    const query = supabase
         .from('reviews')
         .select('*, profiles(full_name)')
         .eq('product_id', productId)

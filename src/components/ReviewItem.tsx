@@ -6,6 +6,7 @@ import AdminReplyForm from './AdminReplyForm';
 import { formatDistanceToNow } from 'date-fns';
 import { toggleReviewApproval } from '@/app/actions/review';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 interface ReviewItemProps {
     review: any;
@@ -60,7 +61,7 @@ export default function ReviewItem({ review, isAdmin, currentUserId }: ReviewIte
             {review.images && review.images.length > 0 && (
                 <div className="flex space-x-2 mb-3 overflow-x-auto">
                     {review.images.map((url: string, index: number) => (
-                        <img key={index} src={url} alt={`Review image ${index + 1}`} className="w-20 h-20 object-cover rounded-md border border-gray-200" />
+                        <Image key={index} src={url} alt={`Review image ${index + 1}`} className="w-20 h-20 object-cover rounded-md border border-gray-200" />
                     ))}
                 </div>
             )}

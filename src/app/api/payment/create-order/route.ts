@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         const order = await razorpay.orders.create(options);
 
         // Create Order in Supabase
-        const { data: newOrder, error: orderError } = await supabase
+        const { data, error: orderError } = await supabase
             .from('orders')
             .insert({
                 user_id: user.id,

@@ -43,7 +43,7 @@ export default function AdminAttributesPage() {
 
         fetchAttributes();
 
-    }, []);
+    }, [supabase]);
 
     const handleDelete = async (id: number) => {
         if (!confirm('Are you sure you want to delete this attribute?')) return;

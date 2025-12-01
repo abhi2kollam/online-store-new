@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { useMobileMenu } from '@/context/MobileMenuContext';
 import { createClient } from '@/utils/supabase/client';
 import { Category } from '@/types';
-import { ChevronDown, ChevronRight } from 'lucide-react';
 
 export default function MobileSidebar() {
     const pathname = usePathname();
