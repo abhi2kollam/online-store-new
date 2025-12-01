@@ -22,11 +22,11 @@ export default function SearchBar() {
     };
 
     return (
-        <div className="form-control w-full max-w-xs">
+        <div className="form-control w-full">
             <input
                 type="text"
                 placeholder="Search products..."
-                className="input input-bordered w-full md:w-auto"
+                className="input input-bordered w-full"
                 defaultValue={searchParams.get('q')?.toString()}
                 onChange={(e) => handleSearch(e.target.value)}
             />

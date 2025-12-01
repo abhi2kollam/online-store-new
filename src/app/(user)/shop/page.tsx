@@ -82,45 +82,56 @@ export default async function ShopPage({ searchParams }: ShopProps) {
     })) || [];
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col lg:flex-row gap-2">
-                {/* Filters (Sidebar on Desktop, Drawer on Mobile) */}
-                <ShopFilters />
+        <div className="drawer lg:drawer-open">
+            <input id="shop-drawer" type="checkbox" className="drawer-toggle" />
 
-                {/* Main Content */}
-                <div className="flex-1">
-                    {/* Top Toolbar */}
-                    <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                        <p className="text-sm text-gray-500">
-                            Showing {products?.length || 0} of {count || 0} results
-                        </p>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">Sort by:</span>
-                            <SortSelect />
-                        </div>
-                    </div>
-
-                    {/* Product Grid */}
-                    {transformedProducts.length > 0 ? (
-                        <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                {transformedProducts.map((product, index) => (
-                                    <ScrollAnimation key={product.id} delay={index * 0.05} className="h-full">
-                                        <ProductCard product={product} />
-                                    </ScrollAnimation>
-                                ))}
-                            </div>
-                            <div className="mt-8">
-                                <Pagination totalPages={totalPages} currentPage={currentPage} />
-                            </div>
-                        </>
-                    ) : (
-                        <div className="text-center py-12 bg-base-100 rounded-box">
-                            <h3 className="text-lg font-medium">No products found</h3>
-                            <p className="text-gray-500">Try adjusting your search or filters.</p>
-                        </div>
-                    )}
+            <div className="drawer-content flex flex-col px-4 py-8">
+                {/* Mobile Filter Button */}
+                <div className="lg:hidden mb-4">
+                    <label htmlFor="shop-drawer" className="btn btn-outline btn-sm gap-2 drawer-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        Filters
+                    </label>
                 </div>
+
+                {/* Top Toolbar */}
+                <div className="flex flex-row justify-between items-center mb-6 gap-4">
+                    <p className="text-sm text-gray-500">
+                        Showing {products?.length || 0} of {count || 0} results
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Sort by:</span>
+                        <SortSelect />
+                    </div>
+                </div>
+
+                {/* Product Grid */}
+                {transformedProducts.length > 0 ? (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {transformedProducts.map((product, index) => (
+                                <ScrollAnimation key={product.id} delay={index * 0.05} className="h-full">
+                                    <ProductCard product={product} />
+                                </ScrollAnimation>
+                            ))}
+                        </div>
+                        <div className="mt-8">
+                            <Pagination totalPages={totalPages} currentPage={currentPage} />
+                        </div>
+                    </>
+                ) : (
+                    <div className="text-center py-12 bg-base-100 rounded-box">
+                        <h3 className="text-lg font-medium">No products found</h3>
+                        <p className="text-gray-500">Try adjusting your search or filters.</p>
+                    </div>
+                )}
+            </div>
+
+            <div className="drawer-side z-40 top-[68px] h-[calc(100vh-68px)]">
+                <label htmlFor="shop-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+                <ShopFilters />
             </div>
         </div>
     );

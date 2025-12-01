@@ -6,9 +6,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
-import { User as UserIcon, LogOut, UserCircle, Menu, X } from 'lucide-react';
+import { User as UserIcon, LogOut, UserCircle, Menu, X, Search } from 'lucide-react';
 import { useMobileMenu } from '@/context/MobileMenuContext';
 import CategoryMenu from './CategoryMenu';
+import SearchDrawer from './SearchDrawer';
 
 const Navbar = () => {
     const { items } = useCart();
@@ -16,6 +17,7 @@ const Navbar = () => {
     const pathname = usePathname();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const supabase = createClient();
     const { isOpen, toggleMenu } = useMobileMenu();
 
@@ -64,6 +66,14 @@ const Navbar = () => {
                 <div className="navbar-end">
                     <ul className="menu menu-horizontal items-center px-1 gap-2">
                         <li>
+                            <button
+                                className="btn btn-ghost btn-circle"
+                                onClick={() => setIsSearchOpen(true)}
+                            >
+                                <Search className="w-5 h-5" />
+                            </button>
+                        </li>
+                        <li>
                             <label htmlFor="cart-drawer" className="btn btn-ghost btn-circle drawer-button">
                                 <div className="indicator">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
@@ -105,6 +115,11 @@ const Navbar = () => {
                     </ul>
                 </div>
             </div>
+
+            <SearchDrawer
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+            />
         </>
     );
 };
