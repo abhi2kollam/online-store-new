@@ -56,7 +56,7 @@ export default function CartDrawerContent() {
                                         <div className="text-xs text-base-content/70 mt-1 flex flex-wrap gap-x-2">
                                             {Object.entries(item.attributes).map(([key, value]) => (
                                                 <span key={key}>
-                                                    <span className="font-semibold">{key}:</span> {value}
+                                                    <span className="font-semibold">{key}:</span> {typeof value === 'string' ? value.split('|')[0] : value}
                                                 </span>
                                             ))}
                                         </div>
