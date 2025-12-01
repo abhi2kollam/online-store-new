@@ -48,9 +48,7 @@ export default async function Home() {
       )}
 
       {categories && categories.length > 0 && (
-        <ScrollAnimation>
-          <CategorySection categories={categories} />
-        </ScrollAnimation>
+        <CategorySection categories={categories} />
       )}
 
       <ScrollAnimation>
