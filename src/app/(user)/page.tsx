@@ -6,6 +6,12 @@ import Newsletter from '@/components/Newsletter';
 import DealBanner from '@/components/DealBanner';
 import { createClient } from '@/utils/supabase/server';
 import ScrollAnimation from '@/components/ScrollAnimation';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Home',
+  description: 'Discover the latest trends in fashion at Online Store.',
+};
 
 export default async function Home() {
   const supabase = await createClient();

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import Script from 'next/script';
 import { createClient } from '@/utils/supabase/client';
+import { toast } from 'sonner';
 
 declare global {
     interface Window {
@@ -114,14 +115,14 @@ export default function CheckoutPage() {
 
                         if (verifyResponse.ok) {
                             clearCart();
-                            alert('Payment Successful! Order placed.');
+                            toast('Payment Successful! Order placed.');
                             router.push('/'); // Redirect to success page or orders
                         } else {
-                            alert('Payment Verification Failed: ' + verifyData.error);
+                            toast('Payment Verification Failed: ' + verifyData.error);
                         }
                     } catch (error) {
                         console.error('Verification Error:', error);
-                        alert('Payment Verification Failed');
+                        toast('Payment Verification Failed');
                     }
                 },
                 prefill: {
@@ -138,7 +139,7 @@ export default function CheckoutPage() {
 
         } catch (error: any) {
             console.error('Checkout Error:', error);
-            alert('Checkout Failed: ' + error.message);
+            toast('Checkout Failed: ' + error.message);
         } finally {
             setIsProcessing(false);
         }

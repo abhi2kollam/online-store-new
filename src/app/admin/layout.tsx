@@ -1,6 +1,15 @@
 import AdminSidebar from '@/components/AdminSidebar';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: {
+        template: '%s | Admin Dashboard',
+        default: 'Admin Dashboard',
+    },
+    description: 'Manage your store.',
+};
 
 export default async function AdminLayout({
     children,

@@ -11,7 +11,10 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Online Store",
+  title: {
+    template: '%s | Online Store',
+    default: 'Online Store',
+  },
   description: "Your one stop shop for fashion",
 };
 

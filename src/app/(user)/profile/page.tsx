@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Order, Profile, Address } from '@/types';
 import { User } from '@supabase/supabase-js';
 import OrderList from '@/components/OrderList';
+import { toast } from 'sonner';
 
 export default function ProfilePage() {
     const [user, setUser] = useState<User | null>(null);
@@ -146,10 +147,10 @@ export default function ProfilePage() {
                 .eq('id', user.id);
 
             if (error) throw error;
-            alert('Profile updated successfully!');
+            toast('Profile updated successfully!');
         } catch (error) {
             console.error('Error updating profile:', error);
-            alert('Error updating profile');
+            toast('Error updating profile');
         } finally {
             setUpdating(false);
         }
@@ -199,10 +200,10 @@ export default function ProfilePage() {
                 country: '',
                 is_default: false,
             });
-            alert('Address added successfully!');
+            toast('Address added successfully!');
         } catch (error) {
             console.error('Error adding address:', error);
-            alert('Failed to add address');
+            toast('Failed to add address');
         }
     };
 
@@ -220,7 +221,7 @@ export default function ProfilePage() {
             setAddresses(addresses.filter(addr => addr.id !== id));
         } catch (error) {
             console.error('Error deleting address:', error);
-            alert('Failed to delete address');
+            toast('Failed to delete address');
         }
     };
 

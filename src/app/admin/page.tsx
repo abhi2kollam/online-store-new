@@ -1,5 +1,10 @@
 import { createClient } from '@/utils/supabase/server';
 import { Order } from '@/types';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Overview',
+};
 
 export default async function AdminDashboard() {
     const supabase = await createClient();

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import TrendingSection from '@/components/TrendingSection';
 import ProductDetails from '@/components/ProductDetails';
 import ReviewList from '@/components/ReviewList';
@@ -11,6 +12,29 @@ interface ProductPageProps {
     params: Promise<{
         slug: string;
     }>;
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const supabase = await createClient();
+
+    const { data: product } = await supabase
+        .from('products')
+        .select('name, description')
+        .eq('slug', slug)
+        .single();
+
+    if (!product) {
+        return {
+            title: 'Product Not Found',
+            description: 'The product you are looking for does not exist.',
+        };
+    }
+
+    return {
+        title: product.name,
+        description: product.description || `Buy ${product.name} at Online Store.`,
+    };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

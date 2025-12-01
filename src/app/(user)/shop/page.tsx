@@ -1,4 +1,5 @@
 import ProductCard from '@/components/ProductCard';
+import { Metadata } from 'next';
 import SearchBar from '@/components/SearchBar';
 import CategoryFilter from '@/components/CategoryFilter';
 import SortSelect from '@/components/SortSelect';
@@ -15,6 +16,23 @@ interface ShopProps {
         page?: string;
         sort?: string;
     }>;
+}
+
+export async function generateMetadata({ searchParams }: ShopProps): Promise<Metadata> {
+    const { q, category } = await searchParams;
+
+    let title = 'Shop';
+    if (q) {
+        title = `Search results for "${q}"`;
+    } else if (category && category !== 'all') {
+        const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+        title = categoryName;
+    }
+
+    return {
+        title,
+        description: 'Browse our collection of products.',
+    };
 }
 
 export default async function ShopPage({ searchParams }: ShopProps) {
