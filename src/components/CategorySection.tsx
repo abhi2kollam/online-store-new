@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import ScrollAnimation from './ScrollAnimation';
@@ -17,6 +17,30 @@ interface CategorySectionProps {
 
 const CategorySection = ({ categories }: CategorySectionProps) => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [isPaused, setIsPaused] = useState(false);
+
+    useEffect(() => {
+        const scrollContainer = scrollContainerRef.current;
+        if (!scrollContainer) return;
+
+        const scrollSpeed = 3; // Increased speed further
+        const intervalTime = 20; // Faster interval for smoothness
+
+        const autoScroll = setInterval(() => {
+            if (!isPaused && scrollContainer) {
+                if (
+                    scrollContainer.scrollLeft + scrollContainer.clientWidth >=
+                    scrollContainer.scrollWidth - 1
+                ) {
+                    scrollContainer.scrollLeft = 0;
+                } else {
+                    scrollContainer.scrollLeft += scrollSpeed;
+                }
+            }
+        }, intervalTime);
+
+        return () => clearInterval(autoScroll);
+    }, [isPaused]);
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
@@ -31,7 +55,10 @@ const CategorySection = ({ categories }: CategorySectionProps) => {
     };
 
     return (
-        <section>
+        <section
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+        >
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl font-bold">Shop By Categories</h2>
                 <div className="flex gap-2">
@@ -53,11 +80,11 @@ const CategorySection = ({ categories }: CategorySectionProps) => {
             </div>
             <div
                 ref={scrollContainerRef}
-                className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x"
+                className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {categories.map((category, index) => (
-                    <ScrollAnimation key={category.id} delay={index * 0.1} className="min-w-[280px] sm:min-w-[320px] snap-start h-full">
+                    <ScrollAnimation key={category.id} delay={index * 0.1} className="min-w-[280px] sm:min-w-[320px] h-full">
                         <Link href={`/shop?category=${category.name}`} className="group relative h-96 rounded-2xl overflow-hidden cursor-pointer block">
                             <Image
                                 src={category.image_url}
