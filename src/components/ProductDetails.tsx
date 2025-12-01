@@ -13,6 +13,7 @@ interface Variant {
     price: number;
     stock: number;
     attributes: Record<string, string>;
+    attributes_metadata?: Record<string, { type: string }>;
     image_url?: string;
     images?: string[];
     is_default?: boolean;
@@ -34,6 +35,7 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
 
     useEffect(() => {
         const fetchVariants = async () => {
+            const supabase = createClient();
             if (product.product_type !== 'variant') return;
 
             setLoadingVariants(true);
@@ -43,7 +45,7 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
                     id, sku, price, stock, image_url, images, is_default,
                     product_variant_attributes (
                         value,
-                        attributes (name)
+                        attributes (name, type)
                     )
                 `)
                 .eq('product_id', product.id);
@@ -57,9 +59,12 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
             // Transform data
             const formattedVariants: Variant[] = variantsData.map((v) => {
                 const attributes: Record<string, string> = {};
+                const attributes_metadata: Record<string, { type: string }> = {};
+
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 v.product_variant_attributes.forEach((pva: any) => {
                     attributes[pva.attributes.name] = pva.value;
+                    attributes_metadata[pva.attributes.name] = { type: pva.attributes.type };
                 });
                 return {
                     id: v.id,
@@ -69,7 +74,8 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
                     image_url: v.image_url,
                     images: v.images,
                     is_default: v.is_default,
-                    attributes
+                    attributes,
+                    attributes_metadata
                 };
             });
 
@@ -159,22 +165,49 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
                                 </div>
                             </div>
                         ) : (
-                            Object.entries(availableAttributes).map(([name, values]) => (
-                                <div key={name}>
-                                    <h3 className="font-bold mb-2">{name}</h3>
-                                    <div className="flex gap-2 flex-wrap">
-                                        {values.map(value => (
-                                            <button
-                                                key={value}
-                                                className={`btn btn-sm ${selectedAttributes[name] === value ? 'btn-neutral' : 'btn-outline'}`}
-                                                onClick={() => handleAttributeSelect(name, value)}
-                                            >
-                                                {value}
-                                            </button>
-                                        ))}
+                            Object.entries(availableAttributes).map(([name, values]) => {
+                                // Find the attribute type from the first variant that has this attribute
+                                const attributeType = variants.find(v => v.attributes[name])?.attributes_metadata?.[name]?.type || 'text';
+
+                                return (
+                                    <div key={name}>
+                                        <h3 className="font-bold mb-2">{name}</h3>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {values.map(value => {
+                                                const isSelected = selectedAttributes[name] === value;
+
+                                                if (attributeType === 'color') {
+                                                    const [colorName, hex] = value.includes('|') ? value.split('|') : [value, value];
+                                                    return (
+                                                        <button
+                                                            key={value}
+                                                            className={`btn btn-sm gap-2 ${isSelected ? 'btn-neutral' : 'btn-outline'}`}
+                                                            onClick={() => handleAttributeSelect(name, value)}
+                                                            title={colorName}
+                                                        >
+                                                            <span
+                                                                className="w-4 h-4 rounded-full border border-base-content/20"
+                                                                style={{ backgroundColor: hex }}
+                                                            />
+                                                            {colorName}
+                                                        </button>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <button
+                                                        key={value}
+                                                        className={`btn btn-sm ${isSelected ? 'btn-neutral' : 'btn-outline'}`}
+                                                        onClick={() => handleAttributeSelect(name, value)}
+                                                    >
+                                                        {value}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 )}

@@ -3215,7 +3215,7 @@ CREATE TABLE public.attributes (
     name text NOT NULL,
     type text NOT NULL,
     created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-    CONSTRAINT attributes_type_check CHECK ((type = ANY (ARRAY['text'::text, 'number'::text, 'select'::text])))
+    CONSTRAINT attributes_type_check CHECK ((type = ANY (ARRAY['text'::text, 'number'::text, 'select'::text, 'color'::text])))
 );
 
 

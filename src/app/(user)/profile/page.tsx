@@ -8,7 +8,6 @@ import { User } from '@supabase/supabase-js';
 import OrderList from '@/components/OrderList';
 
 export default function ProfilePage() {
-    const supabase = createClient();
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
@@ -32,6 +31,7 @@ export default function ProfilePage() {
     });
 
     useEffect(() => {
+        const supabase = createClient();
         const getUser = async () => {
             try {
                 console.log('Fetching user...');
@@ -128,7 +128,7 @@ export default function ProfilePage() {
         };
 
         getUser();
-    }, [router, supabase]);
+    }, [router]);
 
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -136,6 +136,7 @@ export default function ProfilePage() {
 
         setUpdating(true);
         try {
+            const supabase = createClient();
             const { error } = await supabase
                 .from('profiles')
                 .update({
@@ -159,6 +160,7 @@ export default function ProfilePage() {
         if (!user) return;
 
         try {
+            const supabase = createClient();
             // If setting as default, unset other defaults first
             if (newAddress.is_default) {
                 await supabase
@@ -206,8 +208,8 @@ export default function ProfilePage() {
 
     const handleDeleteAddress = async (id: string) => {
         if (!confirm('Are you sure you want to delete this address?')) return;
-
         try {
+            const supabase = createClient();
             const { error } = await supabase
                 .from('addresses')
                 .delete()
@@ -223,6 +225,7 @@ export default function ProfilePage() {
     };
 
     const handleLogout = async () => {
+        const supabase = createClient();
         await supabase.auth.signOut();
         router.push('/login');
     };

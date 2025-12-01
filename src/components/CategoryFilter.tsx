@@ -24,7 +24,7 @@ export default function CategoryFilter() {
             console.log('fteching Categories: complted with', data);
         };
         fetchCategories();
-    }, [supabase]);
+    }, []);
 
     const activeCategorySlug = searchParams.get('category') || 'all';
 

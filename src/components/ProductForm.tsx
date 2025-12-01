@@ -537,19 +537,73 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
                                         {variants.map((variant, index) => (
                                             <div key={index} className={`card bg-base-100 shadow-sm p-4 border ${variant.is_default ? 'border-primary border-2' : ''}`}>
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-                                                    {selectedAttributes.map(attr => (
-                                                        <div key={attr} className="form-control">
-                                                            <label className="label text-xs">{attr}</label>
-                                                            <input
-                                                                type="text"
-                                                                placeholder={attr}
-                                                                className="input input-bordered input-sm"
-                                                                value={variant.attributes[attr] || ''}
-                                                                onChange={(e) => updateVariant(index, attr, e.target.value)}
-                                                                required
-                                                            />
-                                                        </div>
-                                                    ))}
+                                                    {selectedAttributes.map(attrName => {
+                                                        const attribute = attributes.find(a => a.name === attrName);
+                                                        const type = attribute?.type || 'text';
+
+                                                        return (
+                                                            <div key={attrName} className="form-control">
+                                                                <label className="label text-xs">{attrName}</label>
+                                                                {type === 'color' ? (
+                                                                    <div className="flex gap-2">
+                                                                        {(() => {
+                                                                            const currentValue = variant.attributes[attrName] || '';
+                                                                            const [name, hex] = currentValue.includes('|')
+                                                                                ? currentValue.split('|')
+                                                                                : ['', currentValue || '#000000'];
+
+                                                                            const handleColorChange = (newHex: string) => {
+                                                                                const newValue = `${name}|${newHex}`;
+                                                                                updateVariant(index, attrName, newValue);
+                                                                            };
+
+                                                                            const handleNameChange = (newName: string) => {
+                                                                                const newValue = `${newName}|${hex}`;
+                                                                                updateVariant(index, attrName, newValue);
+                                                                            };
+
+                                                                            return (
+                                                                                <>
+                                                                                    <input
+                                                                                        type="color"
+                                                                                        className="input input-bordered input-sm w-12 p-1 h-8"
+                                                                                        value={hex}
+                                                                                        onChange={(e) => handleColorChange(e.target.value)}
+                                                                                    />
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        placeholder="Color Name (e.g. Pastel Yellow)"
+                                                                                        className="input input-bordered input-sm flex-1"
+                                                                                        value={name}
+                                                                                        onChange={(e) => handleNameChange(e.target.value)}
+                                                                                        required
+                                                                                    />
+                                                                                </>
+                                                                            );
+                                                                        })()}
+                                                                    </div>
+                                                                ) : type === 'number' ? (
+                                                                    <input
+                                                                        type="number"
+                                                                        placeholder={attrName}
+                                                                        className="input input-bordered input-sm"
+                                                                        value={variant.attributes[attrName] || ''}
+                                                                        onChange={(e) => updateVariant(index, attrName, e.target.value)}
+                                                                        required
+                                                                    />
+                                                                ) : (
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder={attrName}
+                                                                        className="input input-bordered input-sm"
+                                                                        value={variant.attributes[attrName] || ''}
+                                                                        onChange={(e) => updateVariant(index, attrName, e.target.value)}
+                                                                        required
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
                                                 <div className="grid grid-cols-3 gap-4">
                                                     <div className="form-control">

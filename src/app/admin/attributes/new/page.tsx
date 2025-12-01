@@ -62,7 +62,7 @@ export default function NewAttributePage() {
                         <input
                             type="text"
                             placeholder="e.g. Color, Size, Material"
-                            className="input input-bordered"
+                            className="input input-bordered w-full"
                             required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -74,13 +74,14 @@ export default function NewAttributePage() {
                             <span className="label-text">Type</span>
                         </label>
                         <select
-                            className="select select-bordered"
+                            className="select select-bordered w-full"
                             value={formData.type}
                             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                         >
                             <option value="text">Text</option>
                             <option value="number">Number</option>
                             <option value="select">Select</option>
+                            <option value="color">Color</option>
                         </select>
                     </div>
 

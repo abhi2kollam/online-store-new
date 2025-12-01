@@ -17,26 +17,38 @@ export default function AdminAttributesPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchAttributes = async () => {
-            const { data, error } = await supabase
-                .from('attributes')
-                .select('*')
-                .order('created_at', { ascending: false });
 
-            if (error) {
-                console.error('Error fetching attributes:', error);
-            } else {
-                setAttributes(data || []);
+        const fetchAttributes = async () => {
+            console.log('AdminAttributesPage: Starting fetchAttributes');
+            try {
+                const { data, error } = await supabase
+                    .from('attributes')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                console.log('AdminAttributesPage: Fetch complete', { data, error });
+
+                if (error) {
+                    console.error('Error fetching attributes:', error);
+                } else {
+                    setAttributes(data || []);
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
+            } finally {
+                console.log('AdminAttributesPage: Setting loading to false');
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         fetchAttributes();
-    }, [supabase]);
+
+    }, []);
 
     const handleDelete = async (id: number) => {
         if (!confirm('Are you sure you want to delete this attribute?')) return;
 
+        const supabase = createClient();
         try {
             const { error } = await supabase.from('attributes').delete().eq('id', id);
             if (error) throw error;
