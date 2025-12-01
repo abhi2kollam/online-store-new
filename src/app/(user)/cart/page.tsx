@@ -44,7 +44,7 @@ export default function CartPage() {
                                 <div className="text-sm text-base-content/70 mt-1">
                                     {Object.entries(item.attributes).map(([key, value]) => (
                                         <span key={key} className="mr-3">
-                                            <span className="font-semibold">{key}:</span> {value}
+                                            <span className="font-semibold">{key}:</span> {typeof value === 'string' ? value.split('|')[0] : value}
                                         </span>
                                     ))}
                                 </div>
