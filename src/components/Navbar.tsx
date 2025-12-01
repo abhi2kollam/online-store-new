@@ -54,7 +54,7 @@ const Navbar = () => {
                     >
                         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
-                    <Link href="/" className="btn btn-ghost text-accent text-2xl font-extrabold tracking-tight">Online Store</Link>
+                    <Link href="/" className="text-accent text-xl md:px-4 sm:text-2xl font-extrabold tracking-tight">Online Store</Link>
                 </div>
                 <div className="navbar-center hidden md:flex">
                     <ul className="menu menu-horizontal px-1 gap-4 ">

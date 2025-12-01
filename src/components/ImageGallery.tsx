@@ -62,7 +62,7 @@ const ImageGallery = ({ images, name }: ImageGalleryProps) => {
 
     return (
         <>
-            <div className="flex flex-col-reverse md:flex-row gap-4 h-96 md:h-[600px]">
+            <div className="flex flex-col-reverse md:flex-row gap-4 h-96 md:h-[600px] max-w-full">
                 {/* Thumbnails */}
                 <div className="flex md:flex-col gap-4 overflow-x-auto md:overflow-y-auto md:w-24 shrink-0 scrollbar-hide">
                     {images.map((img, index) => (

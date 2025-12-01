@@ -57,7 +57,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
                 <div className="card-body p-4">
                     <h2 className="card-title text-lg">
                         {product.name}
-                        <span className="badge badge-accent badge-sm">{product.category}</span>
                     </h2>
                     {product.product_code && <p className="text-xs text-gray-500 mb-1">Code: {product.product_code}</p>}
                     <div className={`flex items-center mt-1 ${(!product.rating_count || product.rating_count === 0) ? 'invisible' : ''}`}>
