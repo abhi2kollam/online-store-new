@@ -129,7 +129,13 @@ export default function MediaGallery({ onSelect, selectable = false, allowMultip
                             onClick={() => handleImageClick(img.url)}
                         >
                             <figure className="aspect-square bg-base-200 relative">
-                                <Image src={img.url} alt={img.name} fill className="object-cover" />
+                                <Image
+                                    src={img.url}
+                                    alt={img.name}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                                />
                             </figure>
 
                             {/* Overlay Actions */}

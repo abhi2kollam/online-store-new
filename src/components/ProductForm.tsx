@@ -167,7 +167,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             const publicUrl = data.publicUrl;
 
             if (isMain) {
-                setFormData(prev => ({ ...prev, image: publicUrl }));
+                setFormData(prev => ({ ...prev, image_url: publicUrl }));
             } else {
                 setFormData(prev => ({ ...prev, images: [...(prev.images || []), publicUrl] }));
             }
@@ -197,7 +197,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
     const handleMediaSelect = (url: string | string[]) => {
         if (mediaPickerTarget.type === 'main') {
             if (typeof url === 'string') {
-                setFormData(prev => ({ ...prev, image: url }));
+                setFormData(prev => ({ ...prev, image_url: url }));
             }
         } else if (mediaPickerTarget.type === 'gallery') {
             const urls = Array.isArray(url) ? url : [url];
@@ -208,7 +208,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             });
         } else if (mediaPickerTarget.type === 'variant_main' && mediaPickerTarget.variantIndex !== undefined) {
             if (typeof url === 'string') {
-                updateVariant(mediaPickerTarget.variantIndex, 'image', url);
+                updateVariant(mediaPickerTarget.variantIndex, 'image_url', url);
             }
         } else if (mediaPickerTarget.type === 'variant_gallery' && mediaPickerTarget.variantIndex !== undefined) {
             const urls = Array.isArray(url) ? url : [url];
@@ -256,7 +256,7 @@ export default function ProductForm({ initialData, isEdit = false }: ProductForm
             updatedVariants.forEach((v, i) => {
                 v.is_default = i === index ? (value as boolean) : false;
             });
-        } else if (field === 'sku' || field === 'price' || field === 'stock' || field === 'image' || field === 'images') {
+        } else if (field === 'sku' || field === 'price' || field === 'stock' || field === 'image_url' || field === 'images') {
             updatedVariants[index] = { ...updatedVariants[index], [field]: value };
         } else {
             // It's an attribute
