@@ -13,7 +13,7 @@ export default function CategoryFilter() {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            console.log('Fetching categories...');
+            console.log('Fetching categories...', supabase);
             const { data, error } = await supabase.from('categories').select('name, slug').order('name');
             if (data) {
                 setCategories(data);

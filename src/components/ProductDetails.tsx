@@ -168,11 +168,19 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
                             Object.entries(availableAttributes).map(([name, values]) => {
                                 // Find the attribute type from the first variant that has this attribute
                                 const attributeType = variants.find(v => v.attributes[name])?.attributes_metadata?.[name]?.type || 'text';
+                                const selectedValue = selectedAttributes[name];
 
                                 return (
                                     <div key={name}>
-                                        <h3 className="font-bold mb-2">{name}</h3>
-                                        <div className="flex gap-2 flex-wrap">
+                                        <h3 className="font-bold mb-2 flex items-center gap-2">
+                                            {name}
+                                            {attributeType === 'color' && selectedValue && (
+                                                <span className="font-normal text-base-content/60 text-sm">
+                                                    {selectedValue.includes('|') ? selectedValue.split('|')[0] : selectedValue}
+                                                </span>
+                                            )}
+                                        </h3>
+                                        <div className="flex gap-4 flex-wrap">
                                             {values.map(value => {
                                                 const isSelected = selectedAttributes[name] === value;
 
@@ -181,16 +189,13 @@ export default function ProductDetails({ product, initialImages }: ProductDetail
                                                     return (
                                                         <button
                                                             key={value}
-                                                            className={`btn btn-sm gap-2 ${isSelected ? 'btn-neutral' : 'btn-outline'}`}
+                                                            className={`w-10 h-10 rounded-full border border-base-300 shadow-sm transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${isSelected ? 'ring-2 ring-primary ring-offset-2 scale-110' : ''
+                                                                }`}
+                                                            style={{ backgroundColor: hex }}
                                                             onClick={() => handleAttributeSelect(name, value)}
                                                             title={colorName}
-                                                        >
-                                                            <span
-                                                                className="w-4 h-4 rounded-full border border-base-content/20"
-                                                                style={{ backgroundColor: hex }}
-                                                            />
-                                                            {colorName}
-                                                        </button>
+                                                            aria-label={`Select color ${colorName}`}
+                                                        />
                                                     );
                                                 }
 

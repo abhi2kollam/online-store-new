@@ -91,6 +91,7 @@ const CategorySection = ({ categories }: CategorySectionProps) => {
                                 alt={category.name}
                                 fill
                                 className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                sizes="(max-width: 640px) 280px, 320px"
                             />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
                             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 px-6 py-2 rounded-full flex items-center gap-2 transition-transform group-hover:scale-105">

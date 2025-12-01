@@ -19,7 +19,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
             categories(name), 
             product_variants(
                 id, sku, price, stock, image_url,is_default,    
-                product_variant_attributes(value)
+                product_variant_attributes(id, value)
             )
         `, { count: 'exact' })
         .order('created_at', { ascending: false })
