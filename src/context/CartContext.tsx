@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { Product } from '@/types';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 
 export interface CartItem extends Product {
     quantity: number;
@@ -186,7 +187,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
             if (error) {
                 console.error('Error adding to cart in Supabase:', error);
+                toast.error('Failed to add item to cart');
+            } else {
+                toast.success('Item added to cart');
             }
+        } else {
+            toast.success('Item added to cart');
         }
     };
 

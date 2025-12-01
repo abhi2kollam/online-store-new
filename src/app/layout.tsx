@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import CartDrawerWrapper from "@/components/CartDrawerWrapper";
 import { CartProvider } from "@/context/CartContext";
+import { Toaster } from "sonner";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
             {children}
           </CartDrawerWrapper>
         </CartProvider>
+        <Toaster />
       </body>
     </html>
   );

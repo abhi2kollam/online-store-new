@@ -29,19 +29,14 @@ export default function CheckoutPage() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 // Fetch Profile for Name (fallback)
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('full_name')
-                    .eq('id', user.id)
-                    .single();
+                // Fetch Profile and Address in parallel
+                const [profileResult, addressResult] = await Promise.all([
+                    supabase.from('profiles').select('full_name').eq('id', user.id).single(),
+                    supabase.from('addresses').select('*').eq('user_id', user.id).order('is_default', { ascending: false }).limit(1)
+                ]);
 
-                // Fetch Address
-                const { data: addresses } = await supabase
-                    .from('addresses')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('is_default', { ascending: false })
-                    .limit(1);
+                const profile = profileResult.data;
+                const addresses = addressResult.data;
 
                 let addressStr = '';
                 let fullName = profile?.full_name || '';

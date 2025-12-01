@@ -3,34 +3,33 @@ import { Order } from '@/types';
 
 export default async function AdminDashboard() {
     const supabase = await createClient();
-    const { count: totalProducts } = await supabase.from('products').select('*', { count: 'exact', head: true });
-    const { count: totalCustomers } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('role', 'admin');
-    const { count: totalCategories } = await supabase.from('categories').select('*', { count: 'exact', head: true });
-
-    // Fetch Orders Data
-    const { count: totalOrders } = await supabase
-        .from('orders')
-        .select('*', { count: 'exact', head: true });
-
-    const { data: revenueData } = await supabase
-        .from('orders')
-        .select('total_amount')
-        .eq('status', 'paid');
+    const [
+        { count: totalProducts },
+        { count: totalCustomers },
+        { count: totalCategories },
+        { count: totalOrders },
+        { data: revenueData },
+        { data: recentOrders }
+    ] = await Promise.all([
+        supabase.from('products').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('role', 'admin'),
+        supabase.from('categories').select('*', { count: 'exact', head: true }),
+        supabase.from('orders').select('*', { count: 'exact', head: true }),
+        supabase.from('orders').select('total_amount').eq('status', 'paid'),
+        supabase.from('orders')
+            .select(`
+                *,
+                order_items (
+                    quantity,
+                    price,
+                    products (name)
+                )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(5)
+    ]);
 
     const totalRevenue = revenueData?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
-
-    const { data: recentOrders } = await supabase
-        .from('orders')
-        .select(`
-            *,
-            order_items (
-                quantity,
-                price,
-                products (name)
-            )
-        `)
-        .order('created_at', { ascending: false })
-        .limit(5);
 
     const orders: Order[] = recentOrders?.map(order => ({
         id: order.id,

@@ -10,25 +10,19 @@ import ScrollAnimation from '@/components/ScrollAnimation';
 export default async function Home() {
   const supabase = await createClient();
 
-  // Fetch trending products (simulated by taking first 4)
-  const { data: products } = await supabase
-    .from('products')
-    .select('*')
-    .limit(4);
+  // Fetch trending products and categories in parallel
+  const [productsResult, categoriesResult] = await Promise.all([
+    supabase.from('products').select('*').limit(5),
+    supabase.from('categories').select('id, name, image_url')
+  ]);
 
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('id, name, image_url');
-
-  // Fetch category names for products
-  const { data: allCategories } = await supabase.from('categories').select('id, name');
-  const categoryMap = new Map(allCategories?.map(c => [c.id, c.name]));
+  const products = productsResult.data;
+  const categories = categoriesResult.data;
 
   const trendingProducts = products?.map(p => ({
     ...p,
     id: p.id.toString(),
     image_url: p.image_url,
-    category: categoryMap.get(p.category_id) || 'Uncategorized',
   })) || [];
 
   return (
