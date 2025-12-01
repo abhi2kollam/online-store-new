@@ -13,7 +13,7 @@ export default function UserLayout({
             <MobileMenuDrawerWrapper>
                 <div className="min-h-screen flex flex-col">
                     <Navbar />
-                    <main className="grow container mx-auto px-4 py-8">
+                    <main className="grow container mx-auto px-4 py-4">
                         {children}
                     </main>
                     <Footer />
