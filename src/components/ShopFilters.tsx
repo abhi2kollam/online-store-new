@@ -7,7 +7,7 @@ import CategoryFilter from './CategoryFilter';
 export default function ShopFilters() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const hasFilters = searchParams.has('q') || (searchParams.has('category') && searchParams.get('category') !== 'all');
+    const hasFilters = !!(searchParams.get('q') || (searchParams.get('category') && searchParams.get('category') !== 'all'));
 
     const clearFilters = () => {
         router.push('/shop');

@@ -102,9 +102,13 @@ export default function CartDrawerContent() {
                         >
                             View Cart
                         </Link>
-                        <button className="btn btn-primary w-full btn-sm">
+                        <Link
+                            href="/checkout"
+                            onClick={closeDrawer}
+                            className="btn btn-accent w-full btn-sm"
+                        >
                             Checkout
-                        </button>
+                        </Link>
                     </div>
                 </div>
             )}
