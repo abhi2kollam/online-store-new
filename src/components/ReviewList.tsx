@@ -5,9 +5,11 @@ import { getReviewStats } from '@/app/actions/review';
 
 interface ReviewListProps {
     productId: string;
+    initialAverage: number;
+    initialCount: number;
 }
 
-export default async function ReviewList({ productId }: ReviewListProps) {
+export default async function ReviewList({ productId, initialAverage, initialCount }: ReviewListProps) {
     const supabase = await createClient();
 
     // Check if current user is admin

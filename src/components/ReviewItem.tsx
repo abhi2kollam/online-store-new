@@ -61,7 +61,7 @@ export default function ReviewItem({ review, isAdmin, currentUserId }: ReviewIte
             {review.images && review.images.length > 0 && (
                 <div className="flex space-x-2 mb-3 overflow-x-auto">
                     {review.images.map((url: string, index: number) => (
-                        <Image key={index} src={url} alt={`Review image ${index + 1}`} className="w-20 h-20 object-cover rounded-md border border-gray-200" />
+                        <Image key={index} src={url} alt={`Review image ${index + 1}`} width={80} height={80} className="w-20 h-20 object-cover rounded-md border border-gray-200" />
                     ))}
                 </div>
             )}

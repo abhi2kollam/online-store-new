@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import SortSelect from '@/components/SortSelect';
 import ShopFilters from '@/components/ShopFilters';
 import { createClient } from '@/utils/supabase/server';
+import { ArrowDownNarrowWide } from 'lucide-react';
 
 import Pagination from '@/components/Pagination';
 import ScrollAnimation from '@/components/ScrollAnimation';
@@ -121,7 +122,7 @@ export default async function ShopPage({ searchParams }: ShopProps) {
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">Sort by:</span>
+                        <ArrowDownNarrowWide className="w-8 h-8" />
                         <SortSelect />
                     </div>
                 </div>
